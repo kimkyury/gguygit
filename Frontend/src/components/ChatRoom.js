@@ -12,7 +12,7 @@ const ChatRoom = () => {
   useEffect(() => {
     stompClient.connect({}, frame => {
       console.log('Connected: ' + frame);
-      stompClient.subscribe('/topic/public', message => {
+      stompClient.subscribe('/topic/messages', message => {
         showMessage(JSON.parse(message.body));
       });
     });
@@ -34,7 +34,7 @@ const ChatRoom = () => {
         sender: 'User', // Modify as needed
         timestamp: new Date().toISOString()
       };
-      stompClient.send("/app/chat.send", {}, JSON.stringify(messageContent));
+      stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(messageContent));
       setInput('');
     }
   };
