@@ -1,6 +1,7 @@
 package org.bnksys.chat.entities;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -23,9 +24,12 @@ public class UserOffset {
     @Setter
     private Long offset;
 
-    public UserOffset(Long userId, Long chatroomId) {
+    private UserOffset(Long userId, Long chatroomId) {
         this.userId = userId;
         this.chatroomId = chatroomId;
     }
 
+    public static UserOffset of(Long userId, Long chatroomId) {
+        return new UserOffset(userId, chatroomId);
+    }
 }

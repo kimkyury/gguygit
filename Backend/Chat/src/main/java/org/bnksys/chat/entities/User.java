@@ -20,8 +20,12 @@ public class User {
 
     private Timestamp createdAt;
 
-    public User(String username) {
+    private User(String username) {
         this.username = username;
         this.createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    public static User of(String username) {
+        return new User(username);
     }
 }

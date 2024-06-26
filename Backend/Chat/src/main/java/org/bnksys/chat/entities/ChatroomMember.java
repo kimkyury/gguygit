@@ -21,9 +21,13 @@ public class ChatroomMember {
 
     private Timestamp joinedAt;
 
-    public ChatroomMember(Long chatroomId, Long userId) {
+    private ChatroomMember(Long chatroomId, Long userId) {
         this.chatroomId = chatroomId;
         this.userId = userId;
         this.joinedAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    public static ChatroomMember of(Long chatroomId, Long userId) {
+        return new ChatroomMember(chatroomId, userId);
     }
 }
