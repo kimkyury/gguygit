@@ -8,6 +8,7 @@ spring:
       group-id: chat-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    bootstrap-servers: localhost:9092, localhost:9093
+    bootstrap-servers: localhost:10000,localhost:10001,localhost:10002
+
 server:
   port: 8080
