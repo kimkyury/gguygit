@@ -78,6 +78,17 @@
             <version>${spring-kafka.version}</version> <!-- 명시적으로 버전 설정 -->
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+
         <!-- WebSocket -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -98,11 +109,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka-test</artifactId>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 

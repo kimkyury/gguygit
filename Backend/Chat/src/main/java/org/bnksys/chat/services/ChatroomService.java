@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Random;
 
 @Service
 @Transactional
@@ -30,7 +29,6 @@ public class ChatroomService {
         chatroom = chatroomRepository.save(chatroom);
 
         kafkaProducerService.createChatroom(name, chatroom.getId());
-
     }
 
     public List<Chatroom> getChatroomList() {
@@ -38,13 +36,4 @@ public class ChatroomService {
         return chatroomRepository.findAll();
     }
 
-    public void joinChatroom() {
-
-    }
-
-
-    private String createRandomChatroomName() {
-        Random random = new Random();
-        return String.valueOf(1000 + random.nextInt(9000));
-    }
 }

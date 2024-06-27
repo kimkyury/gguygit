@@ -1,7 +1,7 @@
 package org.bnksys.chat.controllers;
 
 import org.bnksys.chat.entities.Chatroom;
-import org.bnksys.chat.requests.ChatroomUserRequest;
+import org.bnksys.chat.requests.CreateChatroomRequest;
 import org.bnksys.chat.services.ChatroomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,9 @@ public class ChatRoomController {
     private ChatroomService chatroomService;
 
     @PostMapping("")
-    public ResponseEntity<String> createChatroom(@RequestBody String name) {
+    public ResponseEntity<String> createChatroom(@RequestBody CreateChatroomRequest request) {
 
-        chatroomService.createChatroom(name);
+        chatroomService.createChatroom(request.getChatroomName());
 
         return ResponseEntity.ok("Created Chatroom");
     }
@@ -31,12 +31,12 @@ public class ChatRoomController {
 
         return ResponseEntity.ok(chatroomList);
     }
-
-
-    @PostMapping("/join")
-    public ResponseEntity<String> joinChatRoom(@RequestBody ChatroomUserRequest request) {
-        // chatroomService.joinChatRoom(request.getChatroomId(), request.getUserId()
-        return ResponseEntity.ok("Joined chat room");
-
-    }
+//
+//
+//    @PostMapping("/join")
+//    public ResponseEntity<String> joinChatRoom(@RequestBody ChatroomUserRequest request) {
+//        // chatroomService.joinChatRoom(request.getChatroomId(), request.getUserId()
+//        return ResponseEntity.ok("Joined chat room");
+//
+//    }
 }

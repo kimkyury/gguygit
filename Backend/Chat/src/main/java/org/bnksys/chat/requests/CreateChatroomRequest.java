@@ -1,5 +1,6 @@
 package org.bnksys.chat.requests;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EnterRequest {
+public class CreateChatroomRequest {
 
-    private Long userId;
-    private Long chatroomId;
-
+    String chatroomName;
 }

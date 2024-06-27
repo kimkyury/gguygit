@@ -1,31 +1,40 @@
 package org.bnksys.chat.dtos;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class ChatMessage {
+public class ChatMessageDto {
 
-    private Long roomId;
+    private Long chatroomId;
     private Long senderId;
     private String message;
     private final LocalDateTime timestamp;
     private final Set<String> readBy; // TODO: 읽은 사람 정보, 안 읽은 개수 셀 때 이용
 
-    private ChatMessage(Long roomId, Long senderId, String message) {
-        this.roomId = roomId;
+    @Setter
+    private MessageType type;
+
+    public enum MessageType {
+        CHAT, ENTER, LEAVE
+    }
+
+    private ChatMessageDto(Long chatroomId, Long senderId, String message) {
+        this.chatroomId = chatroomId;
         this.senderId = senderId;
         this.message = message;
         this.timestamp = LocalDateTime.now();
         this.readBy = new HashSet<>();
     }
 
-    public static ChatMessage of(Long roomId, Long senderId, String message) {
-        return new ChatMessage(roomId, senderId, message);
+    public static ChatMessageDto of(Long roomId, Long senderId, String message) {
+        return new ChatMessageDto(roomId, senderId, message);
     }
+
 
     public void addReadBy(String user) {
         this.readBy.add(user);
