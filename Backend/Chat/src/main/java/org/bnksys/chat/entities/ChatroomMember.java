@@ -1,11 +1,13 @@
 package org.bnksys.chat.entities;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+@Getter
 @Entity
 @Table(name = "chatroom_members")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

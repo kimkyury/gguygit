@@ -7,14 +7,13 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
+@Getter
 @Entity
 @Table(name = "chatrooms")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chatroom {
 
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -29,5 +28,14 @@ public class Chatroom {
 
     public static Chatroom of(String name) {
         return new Chatroom(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Chatroom{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }
