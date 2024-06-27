@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from './axios';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import './App.css';
 
 const App = () => {
   const [rooms, setRooms] = useState([]);
@@ -16,16 +17,24 @@ const App = () => {
   }, []);
 
   const fetchRooms = async () => {
-    const response = await axios.get('/rooms');
-    setRooms(response.data);
+    try {
+      const response = await axios.get('/rooms');
+      setRooms(response.data);
+    } catch (error) {
+      console.error('Error fetching rooms:', error);
+    }
   };
 
   const createRoom = async (roomName) => {
-    await axios.post('/rooms', null, { params: { chatroomName: roomName } });
-    fetchRooms();
+    try {
+      await axios.post('/rooms', null, { params: { chatroomName: roomName } });
+      fetchRooms();
+    } catch (error) {
+      console.error('Error creating room:', error);
+    }
   };
 
-  const joinRoom = (room) => {
+  const joinRoom = useCallback((room) => {
     setCurrentRoom(room);
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
@@ -36,10 +45,10 @@ const App = () => {
       });
     });
     setClient(stompClient);
-  };
+  }, []);
 
   const sendMessage = () => {
-    if (client && currentRoom) {
+    if (client && currentRoom && newMessage.trim() !== '') {
       const chatMessage = {
         sender: username,
         content: newMessage,
@@ -51,46 +60,55 @@ const App = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   return (
-    <div>
+    <div className="app">
       <h1>Chat Application</h1>
-      <div>
+      <div className="input-group">
         <input
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          className="input"
         />
         <input
           type="text"
           placeholder="Create Room"
           onKeyDown={(e) => e.key === 'Enter' && createRoom(e.target.value)}
+          className="input"
         />
       </div>
-      <div>
+      <div className="rooms">
         <h2>Rooms</h2>
-        <ul>
+        <ul className="room-list">
           {rooms.map((room) => (
-            <li key={room.id} onClick={() => joinRoom(room)}>
+            <li key={room.id} onClick={() => joinRoom(room)} className="room-item">
               {room.name}
             </li>
           ))}
         </ul>
       </div>
       {currentRoom && (
-        <div>
+        <div className="chat-room">
           <h2>Room: {currentRoom.name}</h2>
-          <div>
+          <div className="messages">
             <ul>
               {messages.map((message, index) => (
-                <li key={index}>{`${message.sender}: ${message.content}`}</li>
+                <li key={index} className="message-item">{`${message.sender}: ${message.content}`}</li>
               ))}
             </ul>
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+              onKeyDown={handleKeyDown}
+              className="input"
             />
           </div>
         </div>
