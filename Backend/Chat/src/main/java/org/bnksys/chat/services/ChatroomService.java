@@ -33,13 +33,13 @@ public class ChatroomService {
 
     }
 
-    public void joinChatroom() {
+    public List<Chatroom> getChatroomList() {
 
+        return chatroomRepository.findAll();
     }
 
-    public List<Chatroom> getChatrooms() {
+    public void joinChatroom() {
 
-        return null;
     }
 
 
