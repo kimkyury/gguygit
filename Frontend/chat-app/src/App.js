@@ -36,7 +36,7 @@ const App = () => {
 
   const joinRoom = useCallback((room) => {
     setCurrentRoom(room);
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('http://localhost:8080/ws', null, { transports: ['websocket'] });
     const stompClient = Stomp.over(socket);
     stompClient.connect({}, () => {
       stompClient.subscribe(`/topic/${room.id}`, (message) => {
@@ -60,8 +60,8 @@ const App = () => {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+  const handleKeyUp = (e) => {
+    if (e.key === 'Enter' && newMessage.trim() !== '') {
       sendMessage();
     }
   };
@@ -107,7 +107,7 @@ const App = () => {
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
+              onKeyUp={handleKeyUp}
               className="input"
             />
           </div>
