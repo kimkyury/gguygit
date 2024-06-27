@@ -1,57 +1,30 @@
 package org.bnksys.chat.controllers;
 
-import org.bnksys.chat.configs.KafkaConsumerConfig;
-import org.bnksys.chat.dtos.ChatMessageDto;
+import java.util.List;
+import org.bnksys.chat.models.ChatRoom;
+import org.bnksys.chat.repositories.ChatRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class ChatRoomController {
 
     @Autowired
-    private KafkaTemplate<String, ChatMessageDto> kafkaTemplate;
+    private ChatRoomRepository chatRoomRepository;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    @Autowired
-    private KafkaConsumerConfig kafkaConsumerConfig;
-
-    private Map<Long, ConcurrentKafkaListenerContainerFactory<String, ChatMessageDto>> userFactories = new HashMap<>();
-
-
-    /***
-     * 채팅방에 입장한다 (/pub/chat/enter)
-     * @param message
-     */
-    @MessageMapping("/chat/enter")
-    public void enterRoom(@Payload ChatMessageDto message) {
-
-        message.setType(ChatMessageDto.MessageType.ENTER);
-
-        // chatroom_{chatroomId}_user_{userId} 형태로 groupId를 생성한다
-        String groupId = "chatroom_" + message.getChatroomId() + "_user_" + message.getSenderId();
-        userFactories.putIfAbsent(
-                message.getSenderId(),
-                kafkaConsumerConfig.kafkaListenerContainerFactory(groupId)
-        );
-
-        kafkaTemplate.send("chatroom_" + message.getChatroomId(), message);
+    @PostMapping
+    public ResponseEntity<ChatRoom> createRoom(@RequestParam String chatroomName) {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setName(chatroomName);
+        return ResponseEntity.ok(chatRoomRepository.save(chatRoom));
     }
 
-    @MessageMapping("/chat/message")
-    public void sendMessage(@Payload ChatMessageDto message) {
-
-        message.setType(ChatMessageDto.MessageType.CHAT);
-        kafkaTemplate.send("chatroom_" + message.getChatroomId(), message);
+    @GetMapping
+    public ResponseEntity<List<ChatRoom>> getAllRooms() {
+        return ResponseEntity.ok(chatRoomRepository.findAll());
     }
-
 }

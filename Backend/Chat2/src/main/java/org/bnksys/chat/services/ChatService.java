@@ -1,36 +1,29 @@
 package org.bnksys.chat.services;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.transaction.Transactional;
-import org.bnksys.chat.entities.Chatroom;
-import org.bnksys.chat.repositories.ChatRoomRepository;
+import org.bnksys.chat.models.ChatMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+/***
+ * Kafka와 통신하여 메시지를 보내는 서비스
+ */
 @Service
 @Transactional
 public class ChatService {
 
-    private final String CHATROOM_TOPIC_PREFIX = "chatroom-";
     @Autowired
-    private KafkaProducerService kafkaProducerService;
-    @Autowired
-    private ChatRoomRepository chatroomRepository;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
-    /***
-     * 채팅방을 개설하고 채팅방 Topic을 생성한다
-     */
-    public void createChatroom(String name) {
-
-        ChatRoom chatroom = ChatRoom.of(name);
-        chatroom = chatroomRepository.save(chatroom);
-
-        kafkaProducerService.createChatroom(name, chatroom.getId());
-    }
-
-    public List<Chatroom> getChatroomList() {
-
-        return chatroomRepository.findAll();
+    public void sendMessage(ChatMessage chatMessage) {
+        try {
+            String message = new ObjectMapper().writeValueAsString(chatMessage);
+            kafkaTemplate.send("chat-messages", message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

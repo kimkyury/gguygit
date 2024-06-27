@@ -1,45 +1,34 @@
 package org.bnksys.chat.controllers;
 
-import java.util.List;
-import org.bnksys.chat.models.ChatRoom;
-import org.bnksys.chat.requests.CreateChatRoomRequest;
+import org.bnksys.chat.models.ChatMessage;
 import org.bnksys.chat.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
+/***
+ * Stomp를 이용한 채팅 컨트롤러
+ */
 @RestController
-@RequestMapping("/api/v1/rooms")
 public class ChatController {
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     private ChatService chatService;
 
-    @PostMapping("")
-    public ResponseEntity<String> createChatroom(@RequestBody CreateChatRoomRequest request) {
-
-        chatService.createChatroom(request.getChatroomName());
-
-        return ResponseEntity.ok("Created Chatroom");
+    @MessageMapping("/chat/enter")
+    public void enter(@Payload ChatMessage chatMessage) {
+        chatMessage.setContent(chatMessage.getSender() + "님이 입장하셨습니다.");
+        chatService.sendMessage(chatMessage);
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<ChatRoom>> getChatroomList() {
-
-        List<ChatRoom> chatroomList = chatService.getChatroomList();
-
-        return ResponseEntity.ok(chatroomList);
+    @MessageMapping("/chat/message")
+    public void message(@Payload ChatMessage chatMessage) {
+        chatService.sendMessage(chatMessage);
     }
-//
-//
-//    @PostMapping("/join")
-//    public ResponseEntity<String> joinChatRoom(@RequestBody ChatroomUserRequest request) {
-//        // chatroomService.joinChatRoom(request.getChatroomId(), request.getUserId()
-//        return ResponseEntity.ok("Joined chat room");
-//
-//    }
+
 }
