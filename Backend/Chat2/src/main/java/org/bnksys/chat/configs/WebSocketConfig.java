@@ -18,13 +18,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     /***
-     * /topic: 특정 토픽의 브로커 활성화를 위한 특정 토픽들의 prefix 지정
+     * /topic: 특정 토픽의 브로커 활성화를 위한 특정 토픽들의 prefix 지정021
      * /app: Client에서 Server로 보낼 메시지의 prefix 지정
-     * @param registry
+     * @param registry 등록할 브로커 객체
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic", "/queue");
         registry.setApplicationDestinationPrefixes("/app");
     }
 }
