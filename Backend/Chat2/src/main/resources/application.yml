@@ -3,7 +3,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: chatadmin
     url: jdbc:postgresql://localhost:5432/chatdb
-    password: ${DB_PASSWORD}
+    password: aadmin
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

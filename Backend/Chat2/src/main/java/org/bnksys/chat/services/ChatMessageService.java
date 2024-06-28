@@ -1,31 +1,50 @@
 package org.bnksys.chat.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.bnksys.chat.models.ChatMessage;
+
+import java.time.LocalDateTime;
+import org.bnksys.chat.dtos.ChatMessageDto;
+import org.bnksys.chat.entities.ChatMessage;
+import org.bnksys.chat.entities.ChatRoom;
+import org.bnksys.chat.entities.User;
+import org.bnksys.chat.repositories.ChatMessageRepository;
+import org.bnksys.chat.repositories.ChatRoomRepository;
+import org.bnksys.chat.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-/***
- * Stomp를 이용하여 해당 구독 유저에게 메시지를 보내는 서비스
- * Kafka로부터 메시지를 수신받아, 해당 STOMP TOPIC 구독자에게 메시지 전송
- *
- */
 @Service
 public class ChatMessageService {
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private ChatMessageRepository chatMessageRepository;
 
-    @KafkaListener(topics = "chat-messages", groupId = "chat_group_id")
-    public void listen(String message) {
-        try {
-            ChatMessage chatMessage = new ObjectMapper().readValue(message, ChatMessage.class);
-            simpMessagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoomId(),
-                chatMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    /***
+     * Dto To Entity 컨버터
+     * @param message
+     * @return
+     */
+    public ChatMessage convertDtoToEntity(ChatMessageDto message) {
+
+        User sendUser = userRepository.findById(message.getSenderId()).get();
+        User targetUser = userRepository.findById(message.getTargetUserId()).get();
+        ChatRoom chatRoom = chatRoomRepository.findById(message.getChatRoomId()).get();
+        LocalDateTime createdAt = LocalDateTime.parse(message.getCreatedAt());
+
+        return ChatMessage.of(message, sendUser, targetUser, chatRoom, createdAt);
     }
+
+    public CHatMessage
+
+    public void saveChatMessage(ChatMessage chatMessage){
+        chatMessageRepository.save(chatMessage);
+    }
+
+
+
 }
