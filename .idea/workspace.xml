@@ -4,7 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="94fc9036-c5d9-449a-a9b4-4f011ee0fa5b" name="Changes" comment="" />
+    <list default="true" id="94fc9036-c5d9-449a-a9b4-4f011ee0fa5b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/ChatApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/ChatApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/Utils/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/Utils/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/configs/KafkaConsumerConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/configs/KafkaConsumerConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/controllers/ChatRoomController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/controllers/ChatRoomController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/controllers/ChatStompController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/controllers/ChatStompController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/dtos/ChatMessageDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/dtos/ChatMessageDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/entities/Chatroom.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/entities/Chatroom.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/entities/ChatroomMember.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/entities/ChatroomMember.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/entities/UserOffset.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/entities/UserOffset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/repositories/ChatroomMemberRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/repositories/ChatroomMemberRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/repositories/ChatroomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/repositories/ChatroomRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/repositories/UserOffsetRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/repositories/UserOffsetRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/repositories/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/requests/CreateChatroomRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/requests/CreateChatroomRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/requests/chatroomUserRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/requests/chatroomUserRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/services/ChatroomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/services/ChatroomService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/services/KafkaMessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/services/KafkaMessageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/services/KafkaProducerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/services/KafkaProducerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/web/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/web/config/WebMvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/bnksys/chat/web/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/main/java/org/kgyury/chat/web/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Chat/src/test/java/org/bnksys/chat/ChatApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Chat/src/test/java/org/kgyury/chat/ChatApplicationTests.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,18 +37,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "kimkyury"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;kimkyury&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/kimkyury/StudyChatbot.git",
-    "accountId": "b9d3f33c-f15b-4925-ae9c-7b2ad8ce07ca"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/kimkyury/StudyChatbot.git&quot;,
+    &quot;accountId&quot;: &quot;b9d3f33c-f15b-4925-ae9c-7b2ad8ce07ca&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -33,24 +57,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/2421107/Desktop/Git/StudyChatbot",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "C:/Users/2421107/Desktop/Git/Chatbot/src/main/java/org/example/Main.java",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/2421107/Desktop/Git/StudyChatbot&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/2421107/Desktop/Git/Chatbot/src/main/java/org/example/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -70,6 +94,7 @@
       <workItem from="1718681001147" duration="2580000" />
       <workItem from="1718864584982" duration="1240000" />
       <workItem from="1718866202557" duration="2432000" />
+      <workItem from="1733710145552" duration="847000" />
     </task>
     <servers />
   </component>
