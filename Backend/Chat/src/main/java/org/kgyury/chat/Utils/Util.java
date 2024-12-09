@@ -1,4 +1,4 @@
-package org.bnksys.chat.Utils;
+package org.kgyury.chat.Utils;
 
 
 import java.util.UUID;

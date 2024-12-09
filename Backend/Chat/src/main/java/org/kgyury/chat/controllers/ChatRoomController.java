@@ -1,8 +1,8 @@
-package org.bnksys.chat.controllers;
+package org.kgyury.chat.controllers;
 
-import org.bnksys.chat.entities.Chatroom;
-import org.bnksys.chat.requests.CreateChatroomRequest;
-import org.bnksys.chat.services.ChatroomService;
+import org.kgyury.chat.entities.Chatroom;
+import org.kgyury.chat.requests.CreateChatroomRequest;
+import org.kgyury.chat.services.ChatroomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

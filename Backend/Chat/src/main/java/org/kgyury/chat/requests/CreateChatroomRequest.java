@@ -1,4 +1,4 @@
-package org.bnksys.chat.requests;
+package org.kgyury.chat.requests;
 
 
 import lombok.AllArgsConstructor;

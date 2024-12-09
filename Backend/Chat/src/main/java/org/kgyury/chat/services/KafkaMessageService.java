@@ -1,6 +1,6 @@
-package org.bnksys.chat.services;
+package org.kgyury.chat.services;
 
-import org.bnksys.chat.dtos.ChatMessageDto;
+import org.kgyury.chat.dtos.ChatMessageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;

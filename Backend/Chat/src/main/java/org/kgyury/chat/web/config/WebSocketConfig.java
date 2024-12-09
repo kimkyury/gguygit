@@ -1,4 +1,4 @@
-package org.bnksys.chat.web.config;
+package org.kgyury.chat.web.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

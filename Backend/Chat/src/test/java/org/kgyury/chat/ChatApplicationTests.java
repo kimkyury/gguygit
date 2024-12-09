@@ -1,4 +1,4 @@
-package org.bnksys.chat;
+package org.kgyury.chat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,7 +1,7 @@
-package org.bnksys.chat.services;
+package org.kgyury.chat.services;
 
-import org.bnksys.chat.entities.Chatroom;
-import org.bnksys.chat.repositories.ChatroomRepository;
+import org.kgyury.chat.entities.Chatroom;
+import org.kgyury.chat.repositories.ChatroomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

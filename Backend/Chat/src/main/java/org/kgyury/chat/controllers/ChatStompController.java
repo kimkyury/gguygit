@@ -1,7 +1,7 @@
-package org.bnksys.chat.controllers;
+package org.kgyury.chat.controllers;
 
-import org.bnksys.chat.configs.KafkaConsumerConfig;
-import org.bnksys.chat.dtos.ChatMessageDto;
+import org.kgyury.chat.configs.KafkaConsumerConfig;
+import org.kgyury.chat.dtos.ChatMessageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaTemplate;

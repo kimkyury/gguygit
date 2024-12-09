@@ -1,6 +1,6 @@
-package org.bnksys.chat.repositories;
+package org.kgyury.chat.repositories;
 
-import org.bnksys.chat.entities.User;
+import org.kgyury.chat.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

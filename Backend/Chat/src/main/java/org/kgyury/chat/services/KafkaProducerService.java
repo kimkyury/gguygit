@@ -1,6 +1,6 @@
-package org.bnksys.chat.services;
+package org.kgyury.chat.services;
 
-import org.bnksys.chat.repositories.ChatroomMemberRepository;
+import org.kgyury.chat.repositories.ChatroomMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

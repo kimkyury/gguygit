@@ -1,8 +1,8 @@
-package org.bnksys.chat.configs;
+package org.kgyury.chat.configs;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.bnksys.chat.dtos.ChatMessageDto;
+import org.kgyury.chat.dtos.ChatMessageDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;

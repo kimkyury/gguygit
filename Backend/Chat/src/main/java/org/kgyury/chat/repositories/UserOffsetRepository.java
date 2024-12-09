@@ -1,7 +1,7 @@
-package org.bnksys.chat.repositories;
+package org.kgyury.chat.repositories;
 
-import org.bnksys.chat.entities.User;
-import org.bnksys.chat.entities.UserOffset;
+import org.kgyury.chat.entities.User;
+import org.kgyury.chat.entities.UserOffset;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

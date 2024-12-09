@@ -1,4 +1,4 @@
-package org.bnksys.chat.dtos;
+package org.kgyury.chat.dtos;
 
 import lombok.Getter;
 import lombok.Setter;

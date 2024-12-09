@@ -1,4 +1,4 @@
-package org.bnksys.chat.entities;
+package org.kgyury.chat.entities;
 
 import lombok.AccessLevel;
 import lombok.Getter;
