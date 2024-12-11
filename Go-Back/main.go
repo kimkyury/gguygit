@@ -1,6 +1,9 @@
 package main
 
-import "log"
+import (
+	"go-chat/network"
+	"log"
+)
 
 func init() {
 	// main() 실행 전 수행
@@ -9,5 +12,6 @@ func init() {
 }
 
 func main() {
-	log.Println("후수행")
+	n := network.NewServer()
+	n.StartServer()
 }
