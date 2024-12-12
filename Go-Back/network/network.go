@@ -20,7 +20,7 @@ func NewServer() *Network {
 	n.engin.Use(cors.New(cors.Config{
 		AllowWebSockets:  true,
 		AllowOrigins:     []string("*"),
-		AllowMethod:      []string("GET", "POST", "PUT"),
+		AllowMethods:     []string("GET", "POST", "PUT"),
 		AllowHeaders:     []string("*"),
 		AllowCredentials: true,
 	}))
