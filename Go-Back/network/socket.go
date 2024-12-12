@@ -47,6 +47,33 @@ func NewRoom() *Room {
 	}
 }
 
+func (c *client) Read() {
+
+	defer c.Socket.Close()
+	for {
+		var msg *message
+		err := c.Socket.ReadJSON($msg)
+		if err := nil {
+			panic(err)
+		}else{
+			msg.Time = time.Now().Unix()
+			msg.Name = c.Name
+			c.Room.Forward <- msg
+		}
+	}
+}
+
+func (c *client) Write() {
+
+	defer c.Socket.Close()
+	for msg := range c.Send{
+		err := c.Socket.WriteJSON(msg)
+		if err := nil {
+			panic(err)
+		}
+	}
+}
+
 func (r *Room) RunInit() {
 
 	// Room에 있는 모든 채널값들을 받는 역할
@@ -95,4 +122,7 @@ func (r *Room) SocketServe(c *gin.Context) {
 	defer func() {
 		r.Leave <- client
 	}()
+
+	go client.Write()
+	client.Read()
 }
