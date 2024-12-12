@@ -1,17 +1,24 @@
 package network
 
 import (
-	"go-chat/types"
+	"time"
+
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
 // WebSocket으로 업그레이드 해준다
+const (
+	SocketBufferSize  = 1024
+	messageBufferSize = 256
+)
+
 var upgrader = &websocket.Upgrader{
-	ReadBufferSize:  types.SocketBufferSize,
-	WriteBufferSize: types.MessageBufferSize,
-	CheckOrigin: func(r *http.request) bool {
+	ReadBufferSize:  SocketBufferSize,
+	WriteBufferSize: messageBufferSize,
+	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
 }
@@ -40,22 +47,24 @@ type Client struct {
 func NewRoom() *Room {
 	// 새로운 방을 생성하여 리턴한다
 	return &Room{
-		Forward: make{chan *message},
-		Join:    make{chan *Client},
-		Leave:   make{chan *Client},
-		Clients: make{map[*Client]bool},
+		Forward: make(chan *message),
+		Join:    make(chan *Client),
+		Leave:   make(chan *Client),
+		Clients: make(map[*Client]bool),
 	}
 }
 
-func (c *client) Read() {
+func (c *Client) Read() {
 
 	defer c.Socket.Close()
 	for {
 		var msg *message
-		err := c.Socket.ReadJSON($msg)
-		if err := nil {
+
+		//  메시지를 JSON으로 읽는다.
+		err := c.Socket.ReadJSON(&msg)
+		if err != nil {
 			panic(err)
-		}else{
+		} else {
 			msg.Time = time.Now().Unix()
 			msg.Name = c.Name
 			c.Room.Forward <- msg
@@ -63,12 +72,12 @@ func (c *client) Read() {
 	}
 }
 
-func (c *client) Write() {
+func (c *Client) Write() {
 
 	defer c.Socket.Close()
-	for msg := range c.Send{
+	for msg := range c.Send {
 		err := c.Socket.WriteJSON(msg)
-		if err := nil {
+		if err != nil {
 			panic(err)
 		}
 	}
@@ -110,7 +119,7 @@ func (r *Room) SocketServe(c *gin.Context) {
 	// 유저에 대한 네이밍 가져오기
 	client := &Client{
 		Socket: socket,
-		Send:   make(chan *message, MessageBufferSize),
+		Send:   make(chan *message, messageBufferSize),
 		Room:   r,
 		Name:   userCookie.Value,
 	}

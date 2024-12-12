@@ -19,11 +19,16 @@ func NewServer() *Network {
 	n.engin.Use(gin.Recovery()) // 서버 장애 시 자동으로 failover?
 	n.engin.Use(cors.New(cors.Config{
 		AllowWebSockets:  true,
-		AllowOrigins:     []string("*"),
-		AllowMethods:     []string("GET", "POST", "PUT"),
-		AllowHeaders:     []string("*"),
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT"},
+		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
 	}))
+
+	r := NewRoom()
+	go r.RunInit() // 백그라운드 동작을 의미함
+
+	n.engin.GET("/room", r.SocketServe)
 
 	return &n
 }
