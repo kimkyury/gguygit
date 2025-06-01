@@ -4,19 +4,41 @@ import './PostInput.css'
 
 export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) => {
     const [text, setText] = useState('');
+    const [videoUrl, setVideoUrl] = useState('');
+
+    /* 2025.06.01 Youtube Video에서 Thumbnail 추출하기 */
+    const extractYoutubeThumbnail = (url: string): string => {
+        try {
+            const urlObj = new URL(url);
+            const videoId = urlObj.searchParams.get('v');
+
+            return videoId
+                ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+                : 'https://via.placeholder.com/100'; // fallback
+        } catch (error) {
+            console.error('Invalid URL:', url);
+            console.error(error);
+            return 'https://via.placeholder.com/100';
+        }
+    };
 
     const handleSubmit = () => {
         if (text.trim() === '') return;
 
-        const newPost = {
+        const thumbnail = extractYoutubeThumbnail(videoUrl);
+
+        const newPost: Post = {
             id: Date.now(),
             text,
-            albumImage: 'https://via.placeholder.com/100', // 예시용, 나중에 실제 음악 정보로 교체
-            author: '작성자',
+            videoUrl,
+            albumImage: thumbnail,
+            author: 'Kkr',
+            timestamp: new Date().toLocaleString(),
         };
 
         onAddPost(newPost);
         setText('');
+        setVideoUrl('');
     };
 
     return (
@@ -25,8 +47,15 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
                 value={text}
                 onChange={e => setText(e.target.value)}
                 maxLength={500}
-                placeholder="max-length: 500"
+                placeholder="Write your music reflection here..."
                 className="post-input-textarea"
+            />
+            <input
+                type="text"
+                value={videoUrl}
+                onChange={e => setVideoUrl(e.target.value)}
+                placeholder="Paste YouTube link here"
+                className="post-input-url"
             />
             <button onClick={handleSubmit} className="post-input-button">
                 +

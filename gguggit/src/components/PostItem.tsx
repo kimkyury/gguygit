@@ -14,8 +14,14 @@ export const PostItem = ({ post, align }: { post: Post, align: 'left' | 'right' 
                 className="post-item-image"
             />
             <div className="post-item-content">
-                <div className="post-item-author">{post.author}</div>
+                <div className="post-item-author">작성자: {post.author}</div>
+                <div className="post-item-timestamp">{post.timestamp}</div>
                 <div className="post-item-text">{post.text}</div>
+                <div className="post-item-link">
+                    <a href={post.videoUrl} target="_blank" rel="noopener noreferrer">
+                        🎵 Watch on YouTube
+                    </a>
+                </div>
             </div>
         </div>
     );
