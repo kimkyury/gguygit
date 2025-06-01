@@ -1,10 +1,14 @@
 .post-input-container {
+    max-width: 900px;
+    /* 🚀 고정 */
+    margin: 0 auto;
     margin-bottom: 30px;
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 
 .post-input-textarea {
     width: 100%;
@@ -17,8 +21,13 @@
     resize: none;
 }
 
-.post-input-button {
+.post-input-actions {
+    display: flex;
+    justify-content: flex-end;
     margin-top: 10px;
+}
+
+.post-input-button {
     padding: 8px 16px;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -30,4 +39,28 @@
 
 .post-input-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+.post-input-preview {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.post-input-preview img {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.post-input-preview a {
+    color: #66ccff;
+    text-decoration: none;
+}
+
+.post-input-preview a:hover {
+    text-decoration: underline;
 }

@@ -4,8 +4,10 @@
     margin-bottom: 20px;
     opacity: 0.9;
     transition: opacity 0.5s;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
     width: 100%;
-    /* 전체 너비 */
 }
 
 .post-item-container.left {
@@ -24,8 +26,7 @@
 }
 
 .post-item-content {
-    max-width: 100%;
-    /* 💥 동일 폭 유지 */
+    width: 100%;
     background-color: rgba(255, 255, 255, 0.05);
     padding: 12px;
     border-radius: 12px;
