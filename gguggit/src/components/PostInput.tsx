@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Post } from '@utils/types/Post';
+import './PostInput.css'
 
 export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) => {
     const [text, setText] = useState('');
@@ -19,16 +20,16 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
     };
 
     return (
-        <div style={{ margin: '20px 0', backgroundColor: '#fff', padding: '10px', borderRadius: '8px' }}>
+        <div className="post-input-container">
             <textarea
                 value={text}
                 onChange={e => setText(e.target.value)}
                 maxLength={500}
-                placeholder="MAX-length: 500"
-                style={{ width: '100%', height: '80px', padding: '10px' }}
+                placeholder="max-length: 500"
+                className="post-input-textarea"
             />
-            <button onClick={handleSubmit} style={{ marginTop: '10px' }}>
-                등록하기
+            <button onClick={handleSubmit} className="post-input-button">
+                +
             </button>
         </div>
     );
