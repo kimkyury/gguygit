@@ -1,6 +1,5 @@
 .post-input-container {
     max-width: 900px;
-    /* 🚀 고정 */
     margin: 0 auto;
     margin-bottom: 30px;
     background-color: rgba(255, 255, 255, 0.05);
@@ -9,9 +8,15 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.post-input-main {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+}
 
 .post-input-textarea {
-    width: 100%;
+    flex: 1;
     height: 100px;
     background-color: transparent;
     border: none;
@@ -19,6 +24,30 @@
     font-size: 1rem;
     outline: none;
     resize: none;
+}
+
+.post-input-thumbnail img {
+    width: 80px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ⭐ 별점 */
+.post-input-rating {
+    margin-top: 12px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.post-input-rating .star {
+    color: #555;
+    transition: color 0.2s;
+    margin-right: 4px;
+}
+
+.post-input-rating .star.filled {
+    color: #bfaf7d;
 }
 
 .post-input-actions {
@@ -39,28 +68,4 @@
 
 .post-input-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
-}
-
-.post-input-preview {
-    margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.post-input-preview img {
-    width: 200px;
-    height: auto;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.post-input-preview a {
-    color: #66ccff;
-    text-decoration: none;
-}
-
-.post-input-preview a:hover {
-    text-decoration: underline;
 }

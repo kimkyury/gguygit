@@ -1,0 +1,52 @@
+.home-container {
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: 0.05em;
+
+
+    /* ✨ 추가 */
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.home-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #ccc;
+    text-align: center;
+    font-weight: 300;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+.home-title {
+    overflow: hidden;
+    border-right: 0.15em solid #fff;
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: 0.1em;
+    animation:
+        typing 2s steps(20, end),
+        blink 0.8s step-end infinite;
+    font-size: 2rem;
+    color: #ccc;
+    font-weight: 300;
+    text-align: center;
+}

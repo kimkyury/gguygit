@@ -10,6 +10,7 @@
     width: 100%;
 }
 
+
 .post-item-container.left {
     flex-direction: row;
 }
@@ -61,5 +62,30 @@
 }
 
 .post-item-link a:hover {
+    text-decoration: underline;
+}
+
+.post-item-rating {
+    margin-top: 8px;
+    color: #dcc47c;
+    font-size: 1.2rem;
+}
+
+.post-item-link {
+    margin-top: 6px;
+    font-size: 0.9rem;
+}
+
+.post-item-link a {
+    color: #ccc;
+    /* 🚀 밝은 회색 (고혹적) */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.post-item-link a:hover {
+    color: #fff;
+    /* 🚀 hover 시 살짝 밝아짐 */
     text-decoration: underline;
 }

@@ -2,7 +2,8 @@ export interface Post {
     id: number;
     text: string;
     videoUrl: string;
-    albumImage: string; // 유튜브 썸네일 URL
+    albumImage: string;
     author: string;
     timestamp: string;
+    rating: number; // ⭐ 추가!
 }

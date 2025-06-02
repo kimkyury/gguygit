@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import type { Post } from '@utils/types/Post';
-import './PostInput.css'
+import type { Post } from '@typings/Post';
+import './PostInput.css';
 
 export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) => {
     const [text, setText] = useState('');
     const [previewThumbnail, setPreviewThumbnail] = useState<string>('');
     const [videoUrl, setVideoUrl] = useState<string>('');
+    const [rating, setRating] = useState<number>(0);
 
-
-    /* 2025.06.01 Youtube Video에서 Thumbnail 추출하기 */
     const extractYoutubeData = (text: string): { videoUrl: string; thumbnail: string } => {
         const urlRegex = /(https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-]+))/;
         const match = text.match(urlRegex);
@@ -24,38 +23,35 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
         return { videoUrl: '', thumbnail: '' };
     };
 
-    /* ctrl+v 가 일어나는 시점에만 Youtube Link 검사하기 */
-    const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-        const pasteData = e.clipboardData.getData('text');
-
-        const { videoUrl, thumbnail } = extractYoutubeData(pasteData);
+    useEffect(() => {
+        const { videoUrl, thumbnail } = extractYoutubeData(text);
         setPreviewThumbnail(thumbnail);
         setVideoUrl(videoUrl);
-    };
+    }, [text]);
 
     const handleSubmit = () => {
         if (text.trim() === '') return;
-        const { videoUrl, thumbnail } = extractYoutubeData(text);
-        const textWithoutUrl = text.replace(videoUrl, '').trim(); // Youtube Link 내용은 삭제
+
+        const textWithoutUrl = text.replace(videoUrl, '').trim();
 
         const newPost: Post = {
             id: Date.now(),
             text: textWithoutUrl,
             videoUrl,
-            albumImage: thumbnail || 'https://via.placeholder.com/100',
+            albumImage: previewThumbnail || 'https://via.placeholder.com/100',
             author: 'Anonymous',
             timestamp: new Date().toLocaleString(),
+            rating, // ⭐ 저장
         };
 
         onAddPost(newPost);
 
-        // 초기화
         setText('');
         setPreviewThumbnail('');
         setVideoUrl('');
+        setRating(0);
     };
 
-    /* ctrl + Enter = 바로 등록 */
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.ctrlKey && e.key === 'Enter') {
             handleSubmit();
@@ -64,35 +60,39 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
 
     return (
         <div className="post-input-container">
-            <textarea
-                value={text}
-                onChange={e => setText(e.target.value)}
-                maxLength={500}
-                placeholder="maxlength: 500"
-                className="post-input-textarea"
-                onKeyDown={handleKeyDown}
-                onPaste={handlePaste}
-            />
+            <div className="post-input-main">
+                <textarea
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                    maxLength={500}
+                    placeholder="max-length: 500"
+                    className="post-input-textarea"
+                    onKeyDown={handleKeyDown}
+                />
 
-
-            {/* 🚀 썸네일 미리보기 */}
-            {previewThumbnail && (
-                <div className="post-input-preview">
-                    <img src={previewThumbnail} alt="YouTube Thumbnail" />
-                    <div>
-                        <a href={videoUrl} target="_blank" rel="noopener noreferrer">
-                            🎵 Go to YouTube
-                        </a>
+                {previewThumbnail && (
+                    <div className="post-input-thumbnail">
+                        <img src={previewThumbnail} alt="YouTube Thumbnail" />
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
-
-
+            {/* ⭐ 별점 */}
+            <div className="post-input-rating">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                        key={star}
+                        className={`star ${star <= rating ? 'filled' : ''}`}
+                        onClick={() => setRating(star)}
+                    >
+                        ★
+                    </span>
+                ))}
+            </div>
 
             <div className="post-input-actions">
                 <button onClick={handleSubmit} className="post-input-button">
-                    +
+                    Submit
                 </button>
             </div>
         </div>
