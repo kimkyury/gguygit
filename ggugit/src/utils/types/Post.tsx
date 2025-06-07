@@ -5,5 +5,5 @@ export interface Post {
     albumImage: string;
     author: string;
     timestamp: string;
-    rating: number; // ⭐ 추가!
+    rating: number;
 }

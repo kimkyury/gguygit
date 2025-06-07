@@ -12,25 +12,32 @@ export const PostItem = ({ post, align }: { post: Post; align: 'left' | 'right' 
                 alt="Album"
                 className="post-item-image"
             />
-            <div className="post-item-content">
-                <div className="post-item-author">작성자: {post.author}</div>
-                <div className="post-item-timestamp">{post.timestamp}</div>
+            <div className="post-item-content ">
+
+                <div className="flex">
+                    <div className="post-item-author">작성자: {post.author}</div>
+                    <div className="post-item-timestamp">
+                        {post.timestamp}
+                    </div>
+                    {/* ⭐ 별점 표시 */}
+                    <div className="post-item-rating"
+                        style={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}
+                    >
+                        {'★'.repeat(post.rating)}
+                        {'☆'.repeat(5 - post.rating)}
+                    </div>
+                </div>
                 <div className="post-item-text">{post.text}</div>
 
-                {/* ⭐ 별점 표시 */}
-                <div className="post-item-rating">
-                    {'★'.repeat(post.rating)}
-                    {'☆'.repeat(5 - post.rating)}
-                </div>
 
-                {post.videoUrl && (
+                {/* {post.videoUrl && (
                     <div className="post-item-link">
                         <a href={post.videoUrl} target="_blank" rel="noopener noreferrer">
                             🎵 Go to YouTube
                         </a>
                     </div>
-                )}
+                )} */}
             </div>
-        </div>
+        </div >
     );
 };

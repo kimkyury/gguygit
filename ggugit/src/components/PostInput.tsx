@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Post } from '@typings/Post';
+import type { Post } from '@utils/types/Post';
 import './PostInput.css';
 
 export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) => {
@@ -8,6 +8,17 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
     const [videoUrl, setVideoUrl] = useState<string>('');
     const [rating, setRating] = useState<number>(0);
 
+    useEffect(() => {
+        const { videoUrl, thumbnail } = extractYoutubeData(text);
+        setPreviewThumbnail(thumbnail);
+        setVideoUrl(videoUrl);
+    }, [text]);
+
+    /**
+     * Extract Youtube VideoUrl And thumbnail
+     * @param text 
+     * @returns {videoUrl, thumbnail}
+     */
     const extractYoutubeData = (text: string): { videoUrl: string; thumbnail: string } => {
         const urlRegex = /(https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-]+))/;
         const match = text.match(urlRegex);
@@ -23,12 +34,10 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
         return { videoUrl: '', thumbnail: '' };
     };
 
-    useEffect(() => {
-        const { videoUrl, thumbnail } = extractYoutubeData(text);
-        setPreviewThumbnail(thumbnail);
-        setVideoUrl(videoUrl);
-    }, [text]);
-
+    /**
+     * Submit Inputbox
+     * @returns 
+     */
     const handleSubmit = () => {
         if (text.trim() === '') return;
 
@@ -46,12 +55,17 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
 
         onAddPost(newPost);
 
+        // init Input info
         setText('');
         setPreviewThumbnail('');
         setVideoUrl('');
         setRating(0);
     };
 
+    /**
+     * when press [Enter], Submit InputBox
+     * @param e keyEvent
+     */
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.ctrlKey && e.key === 'Enter') {
             handleSubmit();
@@ -78,22 +92,25 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
             </div>
 
             {/* ⭐ 별점 */}
-            <div className="post-input-rating">
-                {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                        key={star}
-                        className={`star ${star <= rating ? 'filled' : ''}`}
-                        onClick={() => setRating(star)}
-                    >
-                        ★
-                    </span>
-                ))}
-            </div>
+            <div
+                style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div className="post-input-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                            key={star}
+                            className={`star ${star <= rating ? 'filled' : ''}`}
+                            onClick={() => setRating(star)}
+                        >
+                            ★
+                        </span>
+                    ))}
+                </div>
 
-            <div className="post-input-actions">
-                <button onClick={handleSubmit} className="post-input-button">
-                    Submit
-                </button>
+                <div className="post-input-actions">
+                    <button onClick={handleSubmit} className="post-input-button">
+                        Submit
+                    </button>
+                </div>
             </div>
         </div>
     );

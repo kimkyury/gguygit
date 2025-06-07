@@ -48,7 +48,7 @@ export const Intro = () => {
             } else {
                 setTimeout(() => {
                     console.log(">>> next screen → navigate to /home");
-                    navigate('/home'); // ⭐ 자동 이동!!
+                    navigate('/music'); // ⭐ 자동 이동!!
                 }, 1000);
             }
         };

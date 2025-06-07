@@ -46,6 +46,7 @@
 
 .post-item-timestamp {
     font-size: 0.75rem;
+    margin-left: 10px;
     margin-bottom: 6px;
     color: #666;
 }
@@ -66,7 +67,6 @@
 }
 
 .post-item-rating {
-    margin-top: 8px;
     color: #dcc47c;
     font-size: 1.2rem;
 }

@@ -1,8 +1,21 @@
 .text-title {
     color: white;
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     font-weight: bold;
     writing-mode: vertical-rl;
     text-orientation: upright;
     margin-top: 1rem;
+    margin-right: 0rem;
+}
+
+.text-title-offset-right {
+    font-size: 2.0rem;
+    margin-top: 5rem;
+    margin-left: 10px;
+    /*왼쪽으로 10px 이동*/
+}
+
+.text-columns {
+    display: flex;
+    gap: 0px;
 }
