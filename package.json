@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "hangul-js": "^0.2.6",
-    "react-router-dom": "^7.6.1"
-  }
-}
