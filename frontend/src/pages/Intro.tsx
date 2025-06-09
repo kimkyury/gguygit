@@ -22,7 +22,7 @@ export const Intro = () => {
 
     useEffect(() => {
         if (hasStarted.current) return;
-        hasStarted.current = true;
+        hasStarted.current = true
 
         const targetText = "안녕.";
         const targetTextArray = decomposeHangul(targetText);

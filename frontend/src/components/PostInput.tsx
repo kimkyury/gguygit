@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import type { Post } from '@utils/types/Post';
+import type { MusicPost } from '@utils/types/musicPost';
 import './PostInput.css';
 
-export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) => {
+export const PostInput = ({ onAddPost }: { onAddPost: (post: MusicPost) => void }) => {
     const [text, setText] = useState('');
     const [previewThumbnail, setPreviewThumbnail] = useState<string>('');
     const [videoUrl, setVideoUrl] = useState<string>('');
@@ -43,13 +43,14 @@ export const PostInput = ({ onAddPost }: { onAddPost: (post: Post) => void }) =>
 
         const textWithoutUrl = text.replace(videoUrl, '').trim();
 
-        const newPost: Post = {
+        const newPost: MusicPost = {
             id: Date.now(),
             text: textWithoutUrl,
             videoUrl,
-            albumImage: previewThumbnail || 'https://via.placeholder.com/100',
+            imageUrl: previewThumbnail || 'https://via.placeholder.com/100',
             author: 'Anonymous',
-            timestamp: new Date().toLocaleString(),
+            createdDate: new Date().toLocaleString(),
+            updatedDate: new Date().toLocaleString(),
             rating, // ⭐ 저장
         };
 

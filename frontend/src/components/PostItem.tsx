@@ -8,7 +8,7 @@ export const PostItem = ({ post, align }: { post: Post; align: 'left' | 'right' 
     return (
         <div className={`post-item-container ${isLeft ? 'left' : 'right'}`}>
             <img
-                src={post.albumImage}
+                src={post.imageUrl}
                 alt="Album"
                 className="post-item-image"
             />
@@ -17,7 +17,7 @@ export const PostItem = ({ post, align }: { post: Post; align: 'left' | 'right' 
                 <div className="flex">
                     <div className="post-item-author">작성자: {post.author}</div>
                     <div className="post-item-timestamp">
-                        {post.timestamp}
+                        {post.createdDate}
                     </div>
                     {/* ⭐ 별점 표시 */}
                     <div className="post-item-rating"
