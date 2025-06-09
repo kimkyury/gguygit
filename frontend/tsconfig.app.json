@@ -2,6 +2,9 @@
     "compilerOptions": {
         "baseUrl": "src",
         "paths": {
+            "@/*": [
+                "*"
+            ],
             "@utils/*": [
                 "utils/*"
             ],
@@ -13,6 +16,9 @@
             ],
             "@assets/*": [
                 "assets/*"
+            ],
+            "@features/*": [
+                "features/*"
             ]
         },
         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
