@@ -4,7 +4,7 @@ import coverImg from '@assets/gyu1_bg.png'
 import { PostInput } from '@components/PostInput';
 import { PostList } from '@components/PostList';
 import type { MusicPost } from '@utils/types/musicPost';
-import { getAllMusicPosts, createMusicPost } from '@features/music/musicPostApi.ts';
+import { getAllMusicPosts, createMusicPost, updateMusicPost } from '@features/music/musicPostApi.ts';
 
 import './Music.css'
 // function 선언문 : 디버깅 시 컴포넌트 이름이 명확히 찍힌다
@@ -12,6 +12,14 @@ import './Music.css'
 // React4 공식 스타일 가이드에서 "페이지 단위 컴포넌트"는 보통 export default function을 쓴다
 export default function Music() {
     const [posts, setPosts] = useState<MusicPost[]>([]);
+
+    const handleUpdatePost = (updatedPost: Post) => {
+        setPosts(prev =>
+            prev.map(post =>
+                post.id === updatedPost.id ? updatedPost : post
+            )
+        );
+    }
 
     const handleAddPost = async (newPost: MusicPost) => {
         await createMusicPost({
@@ -86,7 +94,7 @@ export default function Music() {
                 <div
                     style={{ margin: 40 }} >
                     <PostInput onAddPost={handleAddPost} />
-                    <PostList posts={posts} />
+                    <PostList posts={posts} onUpdatePost={handleUpdatePost}/>
                 </div>
             </motion.div >
 

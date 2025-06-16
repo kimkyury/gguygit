@@ -1,13 +1,15 @@
 import React from 'react';
 
-import type { Post } from '@utils/types/Post';
+import type { MusicPost } from '@utils/types/musicPost'
 import { PostItem } from '@components/PostItem';
 
-export const PostList = ({ posts }: { posts: Post[] }) => {
+export const PostList = (
+    { posts, onUpdatePost }:
+        { posts: MusicPost[]; onUpdatePost: (updated: MusicPost) => void; }) => {
     return (
         <div style={{ marginTop: '60px' }}>
             {posts.map((post, index) => (
-                <PostItem key={post.id} post={post} align={index % 2 === 0 ? 'left' : 'right'} />
+                <PostItem onUpdatePost={onUpdatePost} key={post.id} post={post} align={index % 2 === 0 ? 'left' : 'right'} />
             ))}
         </div>
     );
