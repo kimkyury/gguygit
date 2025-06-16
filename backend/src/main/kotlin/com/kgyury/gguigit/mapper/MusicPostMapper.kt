@@ -1,7 +1,9 @@
 package com.kgyury.gguigit.mapper
 
 import com.kgyury.gguigit.domain.MusicPost
-import com.kgyury.gguigit.dto.*
+import com.kgyury.gguigit.dto.MusicPostCreateReq
+import com.kgyury.gguigit.dto.MusicPostRes
+import com.kgyury.gguigit.dto.MusicPostUpdateReq
 import org.springframework.stereotype.Component
 import java.time.Instant
 
@@ -11,6 +13,7 @@ class MusicPostMapper {
     fun toRes(entity: MusicPost): MusicPostRes {
 
         return MusicPostRes(
+            id = entity.id,
             text = entity.text,
             videoUrl = entity.videoUrl,
             imageUrl = entity.imageUrl,
@@ -20,7 +23,7 @@ class MusicPostMapper {
         )
     }
 
-    fun toEntity(dto : MusicPostCreateReq, date : Instant) : MusicPost {
+    fun toEntity(dto: MusicPostCreateReq, date: Instant): MusicPost {
 
         return MusicPost(
             text = dto.text,
