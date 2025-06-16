@@ -8,7 +8,7 @@ export const createMusicPost = async (req: MusicPostCreateReq): Promise<MusicPos
 };
 
 export const updateMusicPost = async (id: number, req: MusicPostUpdateReq): Promise<MusicPostRes> => {
-    const response = await axiosInstance.put<MusicPostRes>(API_URL + id, req);
+    const response = await axiosInstance.put<MusicPostRes>(`${API_URL}\\${id}`, req);
     return response.data;
 }
 

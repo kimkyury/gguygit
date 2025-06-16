@@ -4,7 +4,7 @@ import coverImg from '@assets/gyu1_bg.png'
 import { PostInput } from '@components/PostInput';
 import { PostList } from '@components/PostList';
 import type { MusicPost } from '@utils/types/musicPost';
-import { getAllMusicPosts, createMusicPost, updateMusicPost } from '@features/music/musicPostApi.ts';
+import { getAllMusicPosts, createMusicPost } from '@features/music/musicPostApi.ts';
 
 import './Music.css'
 // function 선언문 : 디버깅 시 컴포넌트 이름이 명확히 찍힌다
@@ -13,7 +13,7 @@ import './Music.css'
 export default function Music() {
     const [posts, setPosts] = useState<MusicPost[]>([]);
 
-    const handleUpdatePost = (updatedPost: Post) => {
+    const handleUpdatePost = (updatedPost: MusicPost) => {
         setPosts(prev =>
             prev.map(post =>
                 post.id === updatedPost.id ? updatedPost : post
@@ -94,7 +94,7 @@ export default function Music() {
                 <div
                     style={{ margin: 40 }} >
                     <PostInput onAddPost={handleAddPost} />
-                    <PostList posts={posts} onUpdatePost={handleUpdatePost}/>
+                    <PostList posts={posts} onUpdatePost={handleUpdatePost} />
                 </div>
             </motion.div >
 

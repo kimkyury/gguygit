@@ -5,7 +5,9 @@ import { updateMusicPost } from '@features/music/musicPostApi.ts';
 
 
 export const PostItem = ({
-    post, align, onUpdatePost
+    post,
+    align,
+    onUpdatePost
 }: {
     post: MusicPost;
     align: 'left' | 'right';
@@ -15,8 +17,19 @@ export const PostItem = ({
     const [editMode, setEditMode] = useState(false); // 수정 가능 상태 관리
     const [editedText, setEditedText] = useState(post.text); // 수정 텍스트 관리, 최초엔 기존 텍스트로.
 
+    const formattedDateTime = new Date(post.createdDate).toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
+
+
 
     const handleSave = async () => {
+
         try {
             const updated = await updateMusicPost(post.id, {
                 ...post,
@@ -42,7 +55,8 @@ export const PostItem = ({
                 <div className="flex">
                     <div className="post-item-author">작성자: {post.author}</div>
                     <div className="post-item-timestamp">
-                        {post.createdDate}
+                        {/* {post.createdDate} */}
+                        {formattedDateTime}
                     </div>
                     {/* ⭐ 별점 표시 */}
                     <div className="post-item-rating"
@@ -70,7 +84,7 @@ export const PostItem = ({
                         <div className="post-item-text">{post.text}</div>
                         <button onClick={() => setEditMode(true)}> Edit </button>
                     </>
-                )};
+                )}
             </div>
         </div >
     );
