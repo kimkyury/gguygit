@@ -3,6 +3,8 @@ import type { MusicPost } from '@utils/types/musicPost';
 import './PostItem.css';
 import { updateMusicPost, deleteMusicPost } from '@features/music/musicPostApi.ts';
 import { FaStar, FaRegStar } from 'react-icons/fa';
+import ReactPlayer from 'react-player'; // 👈 설치 필요
+
 
 interface Props {
     post: MusicPost;
@@ -59,7 +61,21 @@ export const PostItem = ({
 
     return (
         <div className={`post-item-container`}>
-            <img src={post.imageUrl} className="post-item-image" alt="Thumbnail" />
+            {post.videoUrl && ReactPlayer.canPlay(post.videoUrl) ? (
+                <div className="post-video-player">
+                    <ReactPlayer
+                        url={post.videoUrl}
+                        width="100%"
+                        height="100%"
+                        controls
+                        light={post.imageUrl} // imageUrl은 썸네일로 사용
+                        style={{ borderRadius: '16px', overflow: 'hidden' }}
+                    />
+                </div>
+            ) : (
+                <img src={post.imageUrl} className="post-item-image" alt="Thumbnail" />
+            )}
+
 
             <div className="post-item-content">
                 <div className="post-item-header">
