@@ -13,6 +13,18 @@ import './Music.css'
 export default function Music() {
     const [posts, setPosts] = useState<MusicPost[]>([]);
 
+    const handleUpdatePost = (updatedPost: MusicPost) => {
+        setPosts(prev =>
+            prev.map(post =>
+                post.id === updatedPost.id ? updatedPost : post
+            )
+        );
+    }
+
+    const handleDeletePost = (id: number) => {
+        setPosts((prev) => prev.filter((post) => post.id !== id));
+    };
+
     const handleAddPost = async (newPost: MusicPost) => {
         await createMusicPost({
             text: newPost.text,
@@ -86,7 +98,7 @@ export default function Music() {
                 <div
                     style={{ margin: 40 }} >
                     <PostInput onAddPost={handleAddPost} />
-                    <PostList posts={posts} />
+                    <PostList posts={posts} onUpdatePost={handleUpdatePost} onDeletePost={handleDeletePost} />
                 </div>
             </motion.div >
 

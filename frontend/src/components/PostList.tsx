@@ -1,13 +1,24 @@
-import React from 'react';
-
-import type { Post } from '@utils/types/Post';
+import type { MusicPost } from '@utils/types/musicPost'
 import { PostItem } from '@components/PostItem';
 
-export const PostList = ({ posts }: { posts: Post[] }) => {
+interface Props {
+    posts: MusicPost[];
+    onUpdatePost: (updated: MusicPost) => void;
+    onDeletePost: (id: number) => void;
+}
+
+export const PostList = ({
+    posts
+    , onUpdatePost
+    , onDeletePost
+}: Props) => {
+
+    console.log(posts.map((post, index) => `index ${index}: post.id = ${post.id}`));
+
     return (
         <div style={{ marginTop: '60px' }}>
-            {posts.map((post, index) => (
-                <PostItem key={post.id} post={post} align={index % 2 === 0 ? 'left' : 'right'} />
+            {posts.map((post) => (
+                <PostItem onUpdatePost={onUpdatePost} key={post.id} post={post} onDeletePost={onDeletePost} />
             ))}
         </div>
     );
