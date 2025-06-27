@@ -21,6 +21,10 @@ export default function Music() {
         );
     }
 
+    const handleDeletePost = (id: number) => {
+        setPosts((prev) => prev.filter((post) => post.id !== id));
+    };
+
     const handleAddPost = async (newPost: MusicPost) => {
         await createMusicPost({
             text: newPost.text,
@@ -94,7 +98,7 @@ export default function Music() {
                 <div
                     style={{ margin: 40 }} >
                     <PostInput onAddPost={handleAddPost} />
-                    <PostList posts={posts} onUpdatePost={handleUpdatePost} />
+                    <PostList posts={posts} onUpdatePost={handleUpdatePost} onDeletePost={handleDeletePost} />
                 </div>
             </motion.div >
 

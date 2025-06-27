@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { MusicPost } from '@utils/types/musicPost';
 import './PostItem.css';
 import { updateMusicPost, deleteMusicPost } from '@features/music/musicPostApi.ts';
