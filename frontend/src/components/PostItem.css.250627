@@ -1,0 +1,160 @@
+.post-item-content {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.post-item-container {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+
+
+.post-item-container.left {
+    flex-direction: row;
+}
+
+.post-item-container.right {
+    flex-direction: row-reverse;
+}
+
+.post-item-image {
+    width: 130px;
+    height: auto;
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 0 16px;
+    flex-shrink: 0;
+}
+
+.post-item-content {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.04);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.post-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post-item-meta {
+    font-size: 0.8rem;
+    color: #aaa;
+    display: flex;
+    gap: 8px;
+}
+
+.post-item-rating {
+    color: #f5c15c;
+    font-size: 1.2rem;
+}
+
+.post-item-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.post-item-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.btn {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    background-color: #333;
+    border: 1px solid #555;
+    color: #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #444;
+}
+
+.btn.delete {
+    background-color: #552222;
+    border-color: #883333;
+}
+
+.btn.cancel {
+    background-color: #444444;
+}
+
+.post-item-edit-mode input.post-item-input {
+    background-color: #222;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+
+.post-item-author {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    color: #888;
+}
+
+.post-item-timestamp {
+    font-size: 0.75rem;
+    margin-left: 10px;
+    margin-bottom: 6px;
+    color: #666;
+}
+
+
+.post-item-link a {
+    color: #66ccff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.post-item-link a:hover {
+    text-decoration: underline;
+}
+
+
+.post-item-link {
+    margin-top: 6px;
+    font-size: 0.9rem;
+}
+
+.post-item-link a {
+    color: #ccc;
+    /* 🚀 밝은 회색 (고혹적) */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.post-item-link a:hover {
+    color: #fff;
+    /* 🚀 hover 시 살짝 밝아짐 */
+    text-decoration: underline;
+}

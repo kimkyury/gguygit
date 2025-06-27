@@ -16,3 +16,7 @@ export const getAllMusicPosts = async (): Promise<MusicPostRes[]> => {
     const response = await axiosInstance.get<MusicPostRes[]>(API_URL);
     return response.data;
 };
+
+export const deleteMusicPost = async (id: number) => {
+    await axiosInstance.delete(`${API_URL}\\${id}`)
+}
