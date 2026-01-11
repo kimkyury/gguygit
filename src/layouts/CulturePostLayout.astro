@@ -1,0 +1,157 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+const { title, date, rating, youtube, summary } = Astro.props;
+
+const getYouTubeId = (url) => {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes('youtu.be')) {
+      return parsed.pathname.replace('/', '');
+    }
+    if (parsed.searchParams.has('v')) {
+      return parsed.searchParams.get('v');
+    }
+    if (parsed.pathname.includes('/embed/')) {
+      return parsed.pathname.split('/embed/')[1];
+    }
+    if (parsed.pathname.includes('/shorts/')) {
+      return parsed.pathname.split('/shorts/')[1];
+    }
+    return null;
+  } catch {
+    return url;
+  }
+};
+
+const youtubeId = getYouTubeId(youtube);
+const ratingValue =
+  typeof rating === 'number' ? Math.max(0, Math.min(5, Math.round(rating))) : null;
+const ratingText =
+  ratingValue !== null ? '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue) : null;
+---
+
+<BaseLayout title={title}>
+  <article class="culture-post">
+    <header class="post-header">
+      <p class="kicker">Culture Review</p>
+      <h1>{title}</h1>
+      <div class="meta">
+        <span>{date}</span>
+        {ratingText && <span>{ratingText}</span>}
+      </div>
+    </header>
+
+    <div class="post-grid">
+      <div class="media">
+        {youtubeId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}`}
+            title={title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        ) : (
+          <div class="media-placeholder">No video</div>
+        )}
+      </div>
+      <div class="content">
+        {summary && <p class="summary">{summary}</p>}
+        <div class="body">
+          <slot />
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .culture-post {
+    display: grid;
+    gap: 24px;
+  }
+
+  .post-header {
+    display: grid;
+    gap: 10px;
+  }
+
+  .kicker {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .post-header h1 {
+    margin: 0;
+    font-family: 'JN_leanring', var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.25fr) 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .media {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(27, 26, 23, 0.12);
+    aspect-ratio: 16 / 9;
+  }
+
+  .media iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .media-placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+  }
+
+  .content {
+    display: grid;
+    gap: 12px;
+  }
+
+  .summary {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-ink);
+    line-height: 1.6;
+  }
+
+  .body :global(p) {
+    margin: 0 0 12px;
+    color: var(--color-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 800px) {
+    .post-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,62 @@
+<header class="site-header">
+  <div class="site-brand">
+    <a class="site-title" href="/">Gguigit|꾸깃꾸깃</a>
+  </div>
+  <div class="site-meta">
+    <span>KKGUL, Developer</span>
+    <span> </span>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px 0 6px;
+    max-width: var(--page-width);
+    margin: 0 auto;
+  }
+
+  .site-brand {
+    display: grid;
+    gap: 8px;
+  }
+
+  .site-title {
+    font-family: 'JN_leanring', var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .site-tagline {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.92rem;
+  }
+
+  .site-meta {
+    display: grid;
+    gap: 4px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-muted);
+    text-align: right;
+  }
+
+  @media (max-width: 760px) {
+    .site-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .site-meta {
+      text-align: left;
+      letter-spacing: 0.14em;
+    }
+  }
+</style>

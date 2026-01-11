@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
 import SiteNav from '../components/SiteNav.astro';
 
 const { title } = Astro.props;
@@ -14,9 +16,11 @@ const pageTitle = title ? `${title} | Gguigit` : 'Gguigit';
     <title>{pageTitle}</title>
   </head>
   <body>
+    <SiteHeader />
     <SiteNav />
     <main>
       <slot />
     </main>
+    <SiteFooter />
   </body>
 </html>
