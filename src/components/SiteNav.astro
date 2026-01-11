@@ -1,39 +1,89 @@
 ---
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/record', label: 'Record' },
-  { href: '/study', label: 'Study' },
-  { href: '/cook', label: 'Cook' },
-  { href: '/culture', label: 'Culture' },
-  { href: '/goods', label: 'Goods' }
+  { href: '/record', label: '기록' },
+  { href: '/study', label: '공부' },
+  { href: '/cook', label: '요리' },
+  { href: '/culture', label: '문화' },
+  { href: '/goods', label: '굿즈' }
 ];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href) =>
+  currentPath === href || (href !== '/' && currentPath.startsWith(`${href}/`));
 ---
 
-<nav aria-label="Primary">
+<nav class="site-nav" aria-label="Primary">
   <ul>
     {navItems.map((item) => (
       <li>
-        <a href={item.href}>{item.label}</a>
+        <a
+          href={item.href}
+          class:list={{ active: isActive(item.href) }}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
       </li>
     ))}
   </ul>
 </nav>
 
 <style>
-  nav ul {
-    display: flex;
-    gap: 16px;
-    list-style: none;
-    margin: 0 0 24px;
-    padding: 0;
+  .site-nav {
+    max-width: var(--page-width);
+    margin: 26px auto 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(27, 26, 23, 0.12);
   }
 
-  nav a {
+  .site-nav ul {
+    display: flex;
+    gap: 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .site-nav li {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .site-nav li:not(:last-child)::after {
+    content: "·";
+    margin-left: 14px;
+    color: var(--color-muted);
+  }
+
+  .site-nav a {
+    position: relative;
     color: inherit;
     text-decoration: none;
+    padding: 4px 2px 8px;
+    font-weight: 500;
   }
 
-  nav a:hover {
-    text-decoration: underline;
+  .site-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0.2);
+    transform-origin: left;
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .site-nav a:hover::after,
+  .site-nav a.active::after {
+    transform: scaleX(1);
+    opacity: 1;
   }
 </style>

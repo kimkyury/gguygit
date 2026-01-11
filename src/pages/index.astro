@@ -3,22 +3,539 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Home">
-  <h1>Home</h1>
-  <p>Landing page for the portfolio blog.</p>
+  <div class="home">
+    <section class="hero reveal">
+      <div class="hero-header">
+        <p class="eyebrow">GGUIGIT </p>
+        <h1>
+          오늘이 완벽하다면 이상한 일이다<br />
+          그릇된 날같다면 평범한 날이다<br />
+        </h1>        <div class="hero-caption">
+          <p></p>
+        </div>
+      </div>
 
-  <section>
-    <h2>Sections</h2>
-    <ul>
-      <li><a href="/record">Record</a></li>
-      <li><a href="/study">Study</a></li>
-      <li><a href="/cook">Cook</a></li>
-      <li><a href="/culture">Culture</a></li>
-      <li><a href="/goods">Goods</a></li>
-    </ul>
-  </section>
+      <div class="hero-media">
+        <img src="/images/hero-main.png" alt="공간 속 사람들" />
+        <div class="hero-dots" aria-hidden="true">
+          <span class="active"></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
 
-  <section>
-    <h2>Tags</h2>
-    <p>Tag route example: <a href="/tags/sample">/tags/sample</a></p>
-  </section>
+      <div class="hero-scroll" aria-hidden="true">
+        <span>v</span>
+      </div>
+    </section>
+
+    <details class="accordion block list reveal delay-1" open>
+      <summary>
+        <span class="summary-index">01.</span>
+        <span class="summary-title">기록</span>
+      </summary>
+      <div class="accordion-content">
+        <ul class="post-list">
+          <li>
+            <span class="post-index">01.</span>
+            <div class="post-main">
+              <div class="post-title">
+                토마토 파스타 <span class="stars">★★★★☆</span>
+              </div>
+              <div class="post-meta">2026.01.11</div>
+            </div>
+            <div class="post-date">2026.01.11</div>
+          </li>
+          <li>
+            <span class="post-index">02.</span>
+            <div class="post-main">
+              <div class="post-title">요즘 내가 생각하는 것</div>
+              <div class="post-meta">2026.01.09</div>
+            </div>
+            <div class="post-date">2026.01.09</div>
+          </li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="accordion block gallery reveal delay-2">
+      <summary>
+        <span class="summary-index">02.</span>
+        <span class="summary-title">요리</span>
+      </summary>
+      <div class="accordion-content">
+        <div class="gallery-row">
+          <article class="gallery-card">
+            <div class="gallery-thumb">
+              <img src="/images/cook-1.png" alt="토마토 파스타" />
+            </div>
+            <div class="gallery-info">
+              <h3>토마토 파스타 <span class="stars">★★★★☆</span></h3>
+              <p>2026.01.11</p>
+              <p class="gallery-meta">조회 2,518 | 좋아요 1,204</p>
+            </div>
+          </article>
+          <article class="gallery-card">
+            <div class="gallery-thumb">
+              <img src="/images/cook-2.png" alt="참치마요 주먹밥" />
+            </div>
+            <div class="gallery-info">
+              <h3>참치마요 주먹밥</h3>
+              <p>2025.12.17</p>
+              <p class="gallery-meta">조회 1,204 | 좋아요 858</p>
+            </div>
+          </article>
+          <article class="gallery-card">
+            <div class="gallery-thumb">
+              <img src="/images/cook-3.png" alt="티라미수" />
+            </div>
+            <div class="gallery-info">
+              <h3>티라미수 <span class="stars">★★★★☆</span></h3>
+              <p>2025.12.02</p>
+              <p class="gallery-meta">조회 1,984 | 좋아요 868</p>
+            </div>
+          </article>
+          <article class="gallery-card">
+            <div class="gallery-thumb">
+              <img src="/images/cook-4.png" alt="베이컨 아보카도 토스트" />
+            </div>
+            <div class="gallery-info">
+              <h3>베이컨 아보카도 토스트</h3>
+              <p>2025.11.25</p>
+              <p class="gallery-meta">조회 1,984 | 좋아요 868</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </details>
+
+    <details class="accordion block culture reveal delay-3">
+      <summary>
+        <span class="summary-index">03.</span>
+        <span class="summary-title">문화</span>
+      </summary>
+      <div class="accordion-content">
+        <div class="culture-card">
+          <img src="/images/culture-1.png" alt="문화 감상" />
+          <div class="culture-text">
+            <h3>킹리어 라이브 감상</h3>
+            <p>
+              무대 위 인물들의 호흡과 정적인 장면 전환이 깊게 남았다.
+              작은 동작 하나에도 감정이 끌려나와 끝까지 시선을 붙잡았다.
+            </p>
+            <p class="gallery-meta">평점 ★★★★☆ | 2025.10.24</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
 </BaseLayout>
+
+<style>
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    position: relative;
+  }
+
+  .home::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -40px;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(228, 88, 38, 0.18), transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  .home::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(240, 165, 0, 0.18), transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  .hero {
+    display: grid;
+    gap: 24px;
+  }
+
+  .reveal {
+    opacity: 0;
+    animation: fade-up 0.8s ease forwards;
+  }
+
+  .delay-1 {
+    animation-delay: 0.1s;
+  }
+
+  .delay-2 {
+    animation-delay: 0.2s;
+  }
+
+  .delay-3 {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-header {
+    display: grid;
+    gap: 14px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  h1 {
+    margin: 0;
+    font-family: 'JN_leanring', 'Junction', sans-serif;
+    font-weight: 300;
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .hero-caption {
+    display: grid;
+    gap: 8px;
+    font-size: 0.98rem;
+    color: var(--color-muted);
+    max-width: 520px;
+  }
+
+  .hero-media {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    background: #d9cfbf;
+  }
+
+  .hero-media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: saturate(0.9);
+  }
+
+  .hero-dots {
+    position: absolute;
+    right: -18px;
+    top: 45%;
+    display: grid;
+    gap: 8px;
+  }
+
+  .hero-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(27, 26, 23, 0.25);
+  }
+
+  .hero-dots span.active {
+    background: var(--color-ink);
+  }
+
+  .hero-scroll {
+    display: flex;
+    justify-content: center;
+    color: var(--color-muted);
+    font-size: 18px;
+  }
+
+  .block {
+    display: grid;
+    gap: 0;
+  }
+
+  .accordion {
+    position: relative;
+    margin-top: -48px;
+  }
+
+  .accordion:first-of-type {
+    margin-top: 0;
+  }
+
+  .accordion:nth-of-type(1) {
+    z-index: 1;
+  }
+
+  .accordion:nth-of-type(2) {
+    z-index: 2;
+  }
+
+  .accordion:nth-of-type(3) {
+    z-index: 3;
+  }
+
+  .accordion summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JN_leanring', var(--font-display);
+    font-weight: 300;
+    font-size: 1.7rem;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    padding: 15px 14px 12px;
+    background: var(--color-paper);
+    border: none;
+    border-top: 1px solid rgba(27, 26, 23, 0.12);
+    border-left: 1px solid rgba(27, 26, 23, 0.12);
+    border-right: 1px solid rgba(27, 26, 23, 0.12);
+    border-radius: 16px;
+    box-shadow: none;
+    position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .accordion summary::before {
+    content: "";
+    position: absolute;
+    top: -11px;
+    left: 14px;
+    width: 92px;
+    height: 12px;
+    background: var(--color-paper);
+    border: none;
+    border-top: 1px solid rgba(27, 26, 23, 0.12);
+    border-left: 1px solid rgba(27, 26, 23, 0.12);
+    border-right: 1px solid rgba(27, 26, 23, 0.12);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .summary-index {
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    letter-spacing: 0.2em;
+    font-family: var(--font-display);
+  }
+
+  .summary-title {
+    font-size: 1.9rem;
+    font-weight: 400;
+  }
+
+  .accordion summary::after {
+    content: "v";
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    transform: rotate(0deg);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .accordion summary:hover {
+    background: #f2e7d5;
+    border-top-color: rgba(27, 26, 23, 0.24);
+    border-left-color: rgba(27, 26, 23, 0.24);
+    border-right-color: rgba(27, 26, 23, 0.24);
+  }
+
+  .accordion summary:hover::before {
+    background: #f2e7d5;
+    border-top-color: rgba(27, 26, 23, 0.24);
+    border-left-color: rgba(27, 26, 23, 0.24);
+    border-right-color: rgba(27, 26, 23, 0.24);
+  }
+
+  .accordion summary:hover::after {
+    color: var(--color-ink);
+  }
+
+  .accordion[open] summary {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
+
+  .accordion[open] summary::after {
+    transform: rotate(180deg);
+    color: var(--color-ink);
+  }
+
+  .accordion-content {
+    padding: 10px 12px 12px;
+    background: var(--color-paper);
+    border: none;
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    box-shadow: none;
+  }
+
+  .accordion[open] + .accordion {
+    margin-top: -30px;
+  }
+
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(27, 26, 23, 0.12);
+  }
+
+  .post-list li {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(27, 26, 23, 0.12);
+    align-items: center;
+  }
+
+  .post-index {
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .post-title {
+    font-weight: 600;
+  }
+
+  .post-meta {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+  }
+
+  .post-date {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .stars {
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    margin-left: 4px;
+  }
+
+  .gallery-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 18px;
+  }
+
+  .gallery-card {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 12px 26px rgba(27, 26, 23, 0.08);
+    display: grid;
+  }
+
+  .gallery-thumb {
+    height: 120px;
+    overflow: hidden;
+  }
+
+  .gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.9);
+  }
+
+  .gallery-info {
+    padding: 12px 12px 14px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .gallery-info h3 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .gallery-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .gallery-meta {
+    font-size: 0.82rem;
+  }
+
+  .culture-card {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.6fr) 1fr;
+    gap: 18px;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    align-items: center;
+    box-shadow: 0 12px 26px rgba(27, 26, 23, 0.08);
+  }
+
+  .culture-card img {
+    width: 100%;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+  }
+
+  .culture-text h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+  }
+
+  .culture-text p {
+    margin: 0 0 8px;
+    color: var(--color-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 760px) {
+    .post-list li {
+      grid-template-columns: 32px 1fr;
+    }
+
+    .post-date {
+      display: none;
+    }
+
+    .culture-card {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
