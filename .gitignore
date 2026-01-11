@@ -187,3 +187,6 @@ sketch
 **/*.package-lock.json
 **/.vscode
 **/.idea
+
+### for CODEX
+/codex
