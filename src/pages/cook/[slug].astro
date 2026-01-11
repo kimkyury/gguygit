@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const { slug } = Astro.params;
+---
+
+<BaseLayout title={`Cook: ${slug}`}>
+  <h1>Cook Detail</h1>
+  <p>Slug: {slug}</p>
+</BaseLayout>

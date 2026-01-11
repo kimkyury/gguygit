@@ -157,6 +157,7 @@ web_modules/
 out
 .nuxt
 dist
+.astro
 .svelte-kit # SvelteKit build output
 .vuepress/dist
 .temp # vuepress v2.x temp and cache directory

@@ -1,0 +1,33 @@
+---
+import SiteNav from '../components/SiteNav.astro';
+
+const { title } = Astro.props;
+const pageTitle = title ? `${title} | Gguigit` : 'Gguigit';
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <SiteNav />
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(body) {
+    margin: 0;
+    padding: 32px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  main {
+    max-width: 960px;
+  }
+</style>
