@@ -31,10 +31,10 @@ const getYouTubeId = (url?: string) => {
 };
 ---
 
-<BaseLayout title="Culture">
+<BaseLayout title="Echoes">
   <section class="culture-list">
     <header class="list-header">
-      <h1>Culture</h1>
+      <h1>Echoes</h1>
       <p>Mugic, Movie, Book, People...</p>
     </header>
 
@@ -44,7 +44,7 @@ const getYouTubeId = (url?: string) => {
       <ul class="list">
         {entries.map((entry, index) => (
           <li>
-            <a class="row" href={`/culture/${entry.slug}`}>
+            <a class="row" href={`/echoes/${entry.slug}`}>
               <div class="thumb">
                 {entry.data.youtube ? (
                   (() => {

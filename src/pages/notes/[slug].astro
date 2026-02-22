@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const { slug } = Astro.params;
+---
+
+<BaseLayout title={`Notes: ${slug}`}>
+  <h1>Notes Detail</h1>
+  <p>Slug: {slug}</p>
+</BaseLayout>

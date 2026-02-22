@@ -1,14 +1,14 @@
 ---
-const navItems = [
-  { href: '/record', label: '기록' },
-  { href: '/study', label: '공부' },
-  { href: '/cook', label: '요리' },
-  { href: '/culture', label: '문화' },
-  { href: '/goods', label: '굿즈' }
+const navItems: { href: string; label: string }[] = [
+  { href: '/thoughts', label: '단상' },
+  { href: '/meals', label: '끼니' },
+  { href: '/notes', label: '앎' },
+  { href: '/echoes', label: '여운' },
+  { href: '/bundles', label: '보따리' }
 ];
 
 const currentPath = Astro.url.pathname;
-const isActive = (href) =>
+const isActive = (href: string) =>
   currentPath === href || (href !== '/' && currentPath.startsWith(`${href}/`));
 ---
 

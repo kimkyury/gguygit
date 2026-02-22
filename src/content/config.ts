@@ -13,4 +13,15 @@ const culture = defineCollection({
   })
 });
 
-export const collections = { culture };
+const record = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    cover: z.string().optional(),
+    summary: z.string().optional(),
+    tags: z.array(z.string()).optional()
+  })
+});
+
+export const collections = { culture, record };
