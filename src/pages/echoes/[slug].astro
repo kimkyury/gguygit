@@ -1,9 +1,9 @@
 ---
-import CulturePostLayout from '../../layouts/CulturePostLayout.astro';
+import EchoesPostLayout from '../../layouts/EchoesPostLayout.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('culture');
+  const entries = await getCollection('echoes');
   return entries.map((entry) => ({
     params: { slug: entry.slug },
     props: { entry }
@@ -15,7 +15,7 @@ const { Content } = await entry.render();
 const formatDate = (date) => date.toISOString().slice(0, 10).replace(/-/g, '.');
 ---
 
-<CulturePostLayout
+<EchoesPostLayout
   title={entry.data.title}
   date={formatDate(entry.data.date)}
   rating={entry.data.rating}
@@ -23,4 +23,4 @@ const formatDate = (date) => date.toISOString().slice(0, 10).replace(/-/g, '.');
   summary={entry.data.summary}
 >
   <Content />
-</CulturePostLayout>
+</EchoesPostLayout>

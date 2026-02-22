@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 
-const culture = defineCollection({
+const echoes = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
@@ -24,4 +24,4 @@ const record = defineCollection({
   })
 });
 
-export const collections = { culture, record };
+export const collections = { echoes, record };

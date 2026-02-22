@@ -2,12 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const entries = (await getCollection('culture')).sort(
+const entries = (await getCollection('echoes')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 const formatDate = (date: Date) =>
   date.toISOString().slice(0, 10).replace(/-/g, '.');
-const fallbackCovers = ['/images/culture-cover-1.png'];
+const echoesFallbackCovers = ['/images/culture-cover-1.png'];
 const getYouTubeId = (url?: string) => {
   if (!url) return null;
   try {
@@ -32,7 +32,7 @@ const getYouTubeId = (url?: string) => {
 ---
 
 <BaseLayout title="Echoes">
-  <section class="culture-list">
+  <section class="echoes-list">
     <header class="list-header">
       <h1>Echoes</h1>
       <p>Mugic, Movie, Book, People...</p>
@@ -59,14 +59,14 @@ const getYouTubeId = (url?: string) => {
                       ></iframe>
                     ) : (
                       <img
-                        src={entry.data.cover ?? fallbackCovers[index % fallbackCovers.length]}
+                        src={entry.data.cover ?? echoesFallbackCovers[index % echoesFallbackCovers.length]}
                         alt={entry.data.title}
                       />
                     );
                   })()
                 ) : (
                   <img
-                    src={entry.data.cover ?? fallbackCovers[index % fallbackCovers.length]}
+                    src={entry.data.cover ?? echoesFallbackCovers[index % echoesFallbackCovers.length]}
                     alt={entry.data.title}
                   />
                 )}
@@ -92,7 +92,7 @@ const getYouTubeId = (url?: string) => {
 </BaseLayout>
 
 <style>
-  .culture-list {
+  .echoes-list {
     display: grid;
     gap: 24px;
   }

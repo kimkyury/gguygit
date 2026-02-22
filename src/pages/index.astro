@@ -115,15 +115,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
     </details>
 
-    <details class="accordion block culture reveal delay-3">
+    <details class="accordion block echoes reveal delay-3">
       <summary>
         <span class="summary-index">03.</span>
         <span class="summary-title">문화</span>
       </summary>
       <div class="accordion-content">
-        <div class="culture-card">
+        <div class="echoes-card">
           <img src="/images/culture-1.png" alt="문화 감상" />
-          <div class="culture-text">
+          <div class="echoes-text">
             <h3>킹리어 라이브 감상</h3>
             <p>
               무대 위 인물들의 호흡과 정적인 장면 전환이 깊게 남았다.
@@ -517,7 +517,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-size: 0.82rem;
   }
 
-  .culture-card {
+  .echoes-card {
     display: grid;
     grid-template-columns: minmax(220px, 0.6fr) 1fr;
     gap: 18px;
@@ -529,23 +529,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     overflow: hidden;
   }
 
-  .culture-card img {
+  .echoes-card img {
     width: 100%;
     border-radius: var(--radius-md);
     object-fit: cover;
     transition: transform 0.35s ease;
   }
 
-  .culture-card:hover img {
+  .echoes-card:hover img {
     transform: scale(1.1);
   }
 
-  .culture-text h3 {
+  .echoes-text h3 {
     margin: 0 0 8px;
     font-size: 1rem;
   }
 
-  .culture-text p {
+  .echoes-text p {
     margin: 0 0 8px;
     color: var(--color-muted);
     line-height: 1.5;
@@ -560,7 +560,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       display: none;
     }
 
-    .culture-card {
+    .echoes-card {
       grid-template-columns: 1fr;
     }
   }
@@ -574,7 +574,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     .hero-media img,
     .gallery-thumb img,
-    .culture-card img {
+    .echoes-card img {
       transition: none;
       transform: none;
     }
