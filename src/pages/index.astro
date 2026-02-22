@@ -147,32 +147,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   if (!('IntersectionObserver' in window)) {
     revealAll();
-    return;
+  } else {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { root: null, rootMargin: '0px 0px -30% 0px', threshold: 0 }
+    );
+
+    revealTargets.forEach((target) => revealObserver.observe(target));
+
+    const revealOnBottom = () => {
+      const doc = document.documentElement;
+      const nearBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 4;
+      if (nearBottom) {
+        revealAll();
+      }
+    };
+
+    window.addEventListener('scroll', revealOnBottom, { passive: true });
+    window.addEventListener('resize', revealOnBottom);
   }
-
-  const revealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    },
-    { root: null, rootMargin: '0px 0px -30% 0px', threshold: 0 }
-  );
-
-  revealTargets.forEach((target) => revealObserver.observe(target));
-
-  const revealOnBottom = () => {
-    const doc = document.documentElement;
-    const nearBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 4;
-    if (nearBottom) {
-      revealAll();
-    }
-  };
-
-  window.addEventListener('scroll', revealOnBottom, { passive: true });
-  window.addEventListener('resize', revealOnBottom);
 
 </script>
 
