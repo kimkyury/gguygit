@@ -59,7 +59,8 @@
   --color-point: #f0a500;
   --color-accent: #e45826;
   --color-muted: #8a8072;
-  --page-width: min(100% - 40px, 980px);
+  --page-width: 1040px;
+  --page-pad-x: 64px;
   --radius-xl: 24px;
   --radius-lg: 18px;
   --radius-md: 12px;
@@ -86,15 +87,30 @@ body {
   font-family: var(--font-body);
   font-size: var(--font-base);
   color: var(--color-ink);
-  background: linear-gradient(180deg, #f2e7d5 0%, #e6d5b8 40%, #e6d5b8 100%);
+  background: linear-gradient(180deg, #f5ead6 0%, #ead7bd 100%);
 }
 
 a {
   color: inherit;
+  transition: color 0.18s ease;
+}
+
+a:hover {
+  color: var(--color-point);
 }
 
 main {
-  max-width: var(--page-width);
+  width: min(var(--page-width), calc(100% - var(--page-pad-x) * 2));
   margin: 0 auto;
-  padding: 10px 0 80px;
+  padding: 24px 0 28px;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --page-pad-x: 24px;
+  }
+
+  main {
+    padding-top: 18px;
+  }
 }

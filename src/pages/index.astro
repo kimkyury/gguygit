@@ -1,582 +1,534 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+type TimelinePost = {
+  id: string;
+  slug: string;
+  title: string;
+  date: Date;
+  dateKey: string;
+  categoryKey: 'thoughts' | 'echoes';
+  categoryLabel: string;
+  href: string;
+  summary?: string;
+};
+
+type TimelineGroup = {
+  key: string;
+  dateKey: string;
+  displayDate: string;
+  items: TimelinePost[];
+  categories: Array<'thoughts' | 'echoes'>;
+};
+
+type SnakeNode = {
+  row: number;
+  col: number;
+  x: number;
+  y: number;
+  markerX: number;
+  group: TimelineGroup;
+  stack: number;
+  primary: 'thoughts' | 'echoes';
+  isMixed: boolean;
+  single: TimelinePost | null;
+  tooltip: string;
+};
+type Point = { x: number; y: number };
+
+const toDateKey = (date: Date) => date.toISOString().slice(0, 10);
+const toDisplayDate = (dateKey: string) => dateKey.replace(/-/g, '.');
+
+const recordEntries = await getCollection('record');
+const echoesEntries = await getCollection('echoes');
+
+const posts: TimelinePost[] = [
+  ...recordEntries.map((entry) => ({
+    id: `record:${entry.slug}`,
+    slug: entry.slug,
+    title: entry.data.title,
+    date: entry.data.date,
+    dateKey: toDateKey(entry.data.date),
+    categoryKey: 'thoughts' as const,
+    categoryLabel: '단상',
+    href: `/thoughts/${entry.slug}`,
+    summary: entry.data.summary
+  })),
+  ...echoesEntries.map((entry) => ({
+    id: `echoes:${entry.slug}`,
+    slug: entry.slug,
+    title: entry.data.title,
+    date: entry.data.date,
+    dateKey: toDateKey(entry.data.date),
+    categoryKey: 'echoes' as const,
+    categoryLabel: '여운',
+    href: `/echoes/${entry.slug}`,
+    summary: entry.data.summary
+  }))
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const grouped = new Map<string, TimelineGroup>();
+
+for (const post of posts) {
+  const existing = grouped.get(post.dateKey);
+  if (!existing) {
+    grouped.set(post.dateKey, {
+      key: post.dateKey,
+      dateKey: post.dateKey,
+      displayDate: toDisplayDate(post.dateKey),
+      items: [post],
+      categories: [post.categoryKey]
+    });
+    continue;
+  }
+
+  existing.items.push(post);
+  if (!existing.categories.includes(post.categoryKey)) {
+    existing.categories.push(post.categoryKey);
+  }
+}
+
+const groups = Array.from(grouped.values());
+const markerCount = groups.length;
+const recentPosts = posts.slice(0, 3);
+
+const columns = 4;
+const totalRows = Math.max(1, Math.ceil(markerCount / columns));
+
+const colWidth = 165;
+const rowHeight = 150;
+const padX = 16;
+const padY = 26;
+
+const canvasWidth = padX * 2 + columns * colWidth;
+const canvasHeight = padY * 2 + totalRows * rowHeight;
+
+const nodes: SnakeNode[] = groups.map((group, index) => {
+  const row = Math.floor(index / columns);
+  const inRow = index % columns;
+  const reverse = row % 2 === 1;
+  const col = reverse ? columns - 1 - inRow : inRow;
+
+  const x = padX + col * colWidth + colWidth / 2;
+  const y = padY + row * rowHeight + rowHeight * 0.42;
+  const edgeInset = 24;
+  const markerX = col === 0 ? x + edgeInset : col === columns - 1 ? x - edgeInset : x;
+
+  const stack = group.items.length;
+  const isMixed = group.categories.length > 1;
+  const primary = group.categories[0];
+  const single = stack === 1 ? group.items[0] : null;
+  const tooltip = single
+    ? `${single.title} · ${single.categoryLabel} · ${group.displayDate}`
+    : `${group.displayDate} · ${stack}개 포스트`;
+
+  return {
+    row,
+    col,
+    x,
+    y,
+    markerX,
+    group,
+    stack,
+    primary,
+    isMixed,
+    single,
+    tooltip
+  };
+});
+
+const points: Point[] = nodes.map((node) => ({ x: node.x, y: node.y }));
+
+const unit = (dx: number, dy: number) => {
+  const len = Math.hypot(dx, dy);
+  if (len === 0) return { x: 0, y: 0 };
+  return { x: dx / len, y: dy / len };
+};
+
+const buildRoundedPath = (pts: Point[], radius = 20) => {
+  if (pts.length === 0) return '';
+  if (pts.length === 1) return `M ${pts[0].x} ${pts[0].y}`;
+  if (pts.length === 2) return `M ${pts[0].x} ${pts[0].y} L ${pts[1].x} ${pts[1].y}`;
+
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+
+  for (let i = 1; i < pts.length - 1; i += 1) {
+    const a = pts[i - 1];
+    const b = pts[i];
+    const c = pts[i + 1];
+
+    const inVec = unit(b.x - a.x, b.y - a.y);
+    const outVec = unit(c.x - b.x, c.y - b.y);
+
+    const distIn = Math.hypot(b.x - a.x, b.y - a.y);
+    const distOut = Math.hypot(c.x - b.x, c.y - b.y);
+    const r = Math.min(radius, distIn / 2, distOut / 2);
+
+    const p1 = { x: b.x - inVec.x * r, y: b.y - inVec.y * r };
+    const p2 = { x: b.x + outVec.x * r, y: b.y + outVec.y * r };
+
+    d += ` L ${p1.x} ${p1.y} Q ${b.x} ${b.y} ${p2.x} ${p2.y}`;
+  }
+
+  const end = pts[pts.length - 1];
+  d += ` L ${end.x} ${end.y}`;
+  return d;
+};
+
+const extendEndpoints = (
+  pts: Point[],
+  extra = 22,
+  lastRowIsSingle = false,
+  lastRowReverse = false
+) => {
+  if (pts.length < 2) return pts;
+
+  const first = pts[0];
+  const second = pts[1];
+  const last = pts[pts.length - 1];
+  const prev = pts[pts.length - 2];
+
+  const startDir = unit(first.x - second.x, first.y - second.y);
+  const endDir = lastRowIsSingle
+    ? { x: lastRowReverse ? -1 : 1, y: 0 }
+    : unit(last.x - prev.x, last.y - prev.y);
+
+  const start = { x: first.x + startDir.x * extra, y: first.y + startDir.y * extra };
+  const end = { x: last.x + endDir.x * extra, y: last.y + endDir.y * extra };
+
+  return [start, ...pts, end];
+};
+
+const lastUsedRow = nodes.length > 0 ? nodes[nodes.length - 1].row : 0;
+const lastRowCount = nodes.filter((node) => node.row === lastUsedRow).length;
+const lastRowReverse = lastUsedRow % 2 === 1;
+const lastRowIsSingle = lastRowCount === 1;
+
+const snakePath = buildRoundedPath(
+  extendEndpoints(points, 22, lastRowIsSingle, lastRowReverse),
+  20
+);
 ---
 
 <BaseLayout title="Home">
-  <div class="home">
-    <section class="hero">
-      <div class="hero-header reveal">
-        <h1>
-          하루가 똑같던 날이 없었다 <br />
-        </h1>        <div class="hero-caption">
-          <p></p>
-        </div>
-      </div>
+  <section class="timeline-home">
+    <header class="hero">
+      <h1>하루가 똑같던 날이 없었다</h1>
+      <p class="hero-meta"> 쓴 날, 총 {markerCount}일</p>
+    </header>
 
-      <div class="hero-media reveal delay-1">
-        <ul class="hero-list" aria-label="Main gallery">
-          <li>
-            <img src="/images/hero-main.png" alt="공간 속 사람들" />
-          </li>
-          <li>
-            <img src="/images/hero-main1.png" alt="라운지 공간" />
-          </li>
-          <li>
-            <img src="/images/hero-main2.png" alt="에디토리얼 보드" />
-          </li>
-          <li>
-            <img src="/images/hero-main3.png" alt="분할 레이아웃" />
-          </li>
-        </ul>
-      </div>
+    {markerCount === 0 ? (
+      <p class="empty">아직 표시할 타임라인 데이터가 없습니다.</p>
+    ) : (
+      <div class="timeline-body">
+        <div class="snake-shell" aria-label="세로 스네이크 타임라인">
+          <div class="snake-canvas" style={{ '--canvas-w': `${canvasWidth}px`, '--canvas-h': `${canvasHeight}px` }}>
+            <svg
+              class="snake-path"
+              viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d={snakePath}></path>
+            </svg>
 
-      <div class="hero-scroll reveal delay-2" aria-hidden="true">
-        <span>v</span>
-      </div>
-    </section>
-
-    <details class="accordion block list reveal delay-1" open>
-      <summary>
-        <span class="summary-index">01.</span>
-        <span class="summary-title">기록</span>
-      </summary>
-      <div class="accordion-content">
-        <ul class="post-list">
-          <li>
-            <span class="post-index">01.</span>
-            <div class="post-main">
-              <div class="post-title">
-                토마토 파스타 <span class="stars">★★★★☆</span>
+            {nodes.map((node) => (
+              <div class="snake-node" role="listitem" style={{ '--x': `${node.markerX}px`, '--y': `${node.y}px` }}>
+                <a
+                  href={node.single ? node.single.href : node.group.items[0].href}
+                  class:list={{
+                    marker: true,
+                    thoughts: node.primary === 'thoughts' && !node.isMixed,
+                    echoes: node.primary === 'echoes' && !node.isMixed,
+                    mixed: node.isMixed
+                  }}
+                  style={{ '--stack': node.stack }}
+                  data-tooltip={node.tooltip}
+                  aria-label={node.tooltip}
+                >
+                  {node.stack > 1 && <span class="count" aria-hidden="true">{node.stack}</span>}
+                </a>
+                <span class="date-label marker-label">{node.group.displayDate}</span>
               </div>
-              <div class="post-meta">2026.01.11</div>
-            </div>
-            <div class="post-date">2026.01.11</div>
-          </li>
-          <li>
-            <span class="post-index">02.</span>
-            <div class="post-main">
-              <div class="post-title">요즘 내가 생각하는 것</div>
-              <div class="post-meta">2026.01.09</div>
-            </div>
-            <div class="post-date">2026.01.09</div>
-          </li>
-        </ul>
-      </div>
-    </details>
-
-    <details class="accordion block gallery reveal delay-2">
-      <summary>
-        <span class="summary-index">02.</span>
-        <span class="summary-title">요리</span>
-      </summary>
-      <div class="accordion-content">
-        <div class="gallery-row">
-          <article class="gallery-card">
-            <div class="gallery-thumb">
-              <img src="/images/cook-1.png" alt="토마토 파스타" />
-            </div>
-            <div class="gallery-info">
-              <h3>토마토 파스타 <span class="stars">★★★★☆</span></h3>
-              <p>2026.01.11</p>
-              <p class="gallery-meta">조회 2,518 | 좋아요 1,204</p>
-            </div>
-          </article>
-          <article class="gallery-card">
-            <div class="gallery-thumb">
-              <img src="/images/cook-2.png" alt="참치마요 주먹밥" />
-            </div>
-            <div class="gallery-info">
-              <h3>참치마요 주먹밥</h3>
-              <p>2025.12.17</p>
-              <p class="gallery-meta">조회 1,204 | 좋아요 858</p>
-            </div>
-          </article>
-          <article class="gallery-card">
-            <div class="gallery-thumb">
-              <img src="/images/cook-3.png" alt="티라미수" />
-            </div>
-            <div class="gallery-info">
-              <h3>티라미수 <span class="stars">★★★★☆</span></h3>
-              <p>2025.12.02</p>
-              <p class="gallery-meta">조회 1,984 | 좋아요 868</p>
-            </div>
-          </article>
-          <article class="gallery-card">
-            <div class="gallery-thumb">
-              <img src="/images/cook-4.png" alt="베이컨 아보카도 토스트" />
-            </div>
-            <div class="gallery-info">
-              <h3>베이컨 아보카도 토스트</h3>
-              <p>2025.11.25</p>
-              <p class="gallery-meta">조회 1,984 | 좋아요 868</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </details>
-
-    <details class="accordion block echoes reveal delay-3">
-      <summary>
-        <span class="summary-index">03.</span>
-        <span class="summary-title">문화</span>
-      </summary>
-      <div class="accordion-content">
-        <div class="echoes-card">
-          <img src="/images/culture-1.png" alt="문화 감상" />
-          <div class="echoes-text">
-            <h3>킹리어 라이브 감상</h3>
-            <p>
-              무대 위 인물들의 호흡과 정적인 장면 전환이 깊게 남았다.
-              작은 동작 하나에도 감정이 끌려나와 끝까지 시선을 붙잡았다.
-            </p>
-            <p class="gallery-meta">평점 ★★★★☆ | 2025.10.24</p>
+            ))}
           </div>
         </div>
+
+        {recentPosts.length > 0 && (
+          <section class="recent" aria-label="최근 글">
+            <h2>가까운 하루</h2>
+            <ul>
+              {recentPosts.map((post) => (
+                <li>
+                  <a href={post.href}>
+                    <span class="title">{post.title}</span>
+                    <span class="meta">{post.dateKey.replace(/-/g, '.')} · {post.categoryLabel}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
-    </details>
-  </div>
+    )}
+
+  </section>
+
+  <script>
+    const nodes = document.querySelectorAll<HTMLElement>('.snake-node');
+    nodes.forEach((node) => {
+      const marker = node.querySelector<HTMLAnchorElement>('.marker');
+      if (!marker) return;
+      marker.addEventListener('click', () => {
+        nodes.forEach((other) => other.classList.remove('active'));
+        node.classList.add('active');
+      });
+    });
+  </script>
 </BaseLayout>
 
-<script>
-  document.documentElement.classList.add('js');
-
-  const revealTargets = document.querySelectorAll('.reveal');
-  const revealAll = () => {
-    revealTargets.forEach((target) => target.classList.add('is-visible'));
-  };
-
-  if (!('IntersectionObserver' in window)) {
-    revealAll();
-  } else {
-    const revealObserver = new IntersectionObserver(
-      (entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        });
-      },
-      { root: null, rootMargin: '0px 0px -30% 0px', threshold: 0 }
-    );
-
-    revealTargets.forEach((target) => revealObserver.observe(target));
-
-    const revealOnBottom = () => {
-      const doc = document.documentElement;
-      const nearBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 4;
-      if (nearBottom) {
-        revealAll();
-      }
-    };
-
-    window.addEventListener('scroll', revealOnBottom, { passive: true });
-    window.addEventListener('resize', revealOnBottom);
-  }
-
-</script>
-
 <style>
-  .home {
-    display: flex;
-    flex-direction: column;
-    gap: 48px;
+  .timeline-home {
+    display: grid;
+    gap: 26px;
     position: relative;
-  }
-
-  .home::before {
-    content: '';
-    position: absolute;
-    top: -120px;
-    right: -40px;
-    width: 240px;
-    height: 240px;
-    background: radial-gradient(circle, rgba(228, 88, 38, 0.18), transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-  }
-
-  .home::after {
-    content: '';
-    position: absolute;
-    bottom: -80px;
-    left: -80px;
-    width: 220px;
-    height: 220px;
-    background: radial-gradient(circle, rgba(240, 165, 0, 0.18), transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
   }
 
   .hero {
     display: grid;
-    gap: 24px;
+    gap: 12px;
+    margin-top: 8px;
   }
 
-  .reveal {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  html.js .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-
-  html.js .reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  html.js .delay-1 {
-    transition-delay: 0.1s;
-  }
-
-  html.js .delay-2 {
-    transition-delay: 0.2s;
-  }
-
-  html.js .delay-3 {
-    transition-delay: 0.3s;
-  }
-
-  .hero-header {
-    display: grid;
-    gap: 14px;
-  }
-
-  .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-  }
-
-  h1 {
+  .hero h1 {
     margin: 0;
-    font-family: 'JN_leanring', 'Junction', sans-serif;
+    font-family: 'JN_leanring', var(--font-display);
     font-weight: 300;
-    font-size: clamp(1.6rem, 3.6vw, 2.6rem);
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
+    font-size: clamp(1.7rem, 3.6vw, 2.45rem);
+    line-height: 1.16;
   }
 
-  .hero-caption {
-    display: grid;
-    gap: 8px;
-    font-size: 0.98rem;
-    color: var(--color-muted);
-    max-width: 520px;
-  }
-
-  .hero-media {
-    position: relative;
-  }
-
-  .hero-list {
-    list-style: none;
-    display: flex;
-    gap: 16px;
-    padding: 0;
+  .hero-meta {
     margin: 0;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .hero-list::-webkit-scrollbar {
-    display: none;
-  }
-
-  .hero-list li {
-    flex: 0 0 33.333%;
-    min-width: 33.333%;
-    scroll-snap-align: start;
-  }
-
-  .hero-media img {
-    display: block;
-    width: 100%;
-    height: 300px;
-    filter: saturate(0.9);
-    transition: transform 0.35s ease;
-    object-fit: cover;
-    border-radius: var(--radius-lg);
-  }
-
-  .hero-list li:hover img {
-    transform: scale(1.05);
-  }
-
-  .hero-scroll {
-    display: flex;
-    justify-content: center;
     color: var(--color-muted);
-    font-size: 18px;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    opacity: 0.82;
   }
 
-  .block {
+  .empty {
+    margin: 0;
+    color: var(--color-muted);
+  }
+
+  .snake-shell {
+    overflow: hidden;
+    padding: 2px 0 2px;
+    margin-top: 4px;
+  }
+
+  .timeline-body {
     display: grid;
-    gap: 0;
+    gap: 18px;
+    align-items: start;
   }
 
-  .accordion {
+  .snake-canvas {
     position: relative;
-    margin-top: -44px;
+    width: var(--canvas-w);
+    height: var(--canvas-h);
+    min-width: var(--canvas-w);
+    margin: 0 auto;
   }
 
-  .accordion:first-of-type {
-    margin-top: 0;
+  .snake-path {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
 
-  .accordion:nth-of-type(1) {
-    z-index: 1;
+  .snake-path path {
+    fill: none;
+    stroke: rgba(27, 26, 23, 0.19);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
-  .accordion:nth-of-type(2) {
+  .snake-node {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 1px;
     z-index: 2;
   }
 
-  .accordion:nth-of-type(3) {
-    z-index: 3;
-  }
+  .marker {
+    --stack: 1;
+    --marker-color: #f0a500;
 
-  .accordion summary {
-    list-style: none;
-    cursor: pointer;
-    display: grid;
-    grid-template-columns: 34px 1fr auto;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JN_leanring', var(--font-display);
-    font-weight: 300;
-    font-size: 1.6rem;
-    letter-spacing: 0.01em;
-    text-transform: none;
-    padding: 15px 14px 12px;
-    background: var(--color-paper);
-    border: none;
-    border-top: 1px solid rgba(27, 26, 23, 0.12);
-    border-left: 1px solid rgba(27, 26, 23, 0.12);
-    border-right: 1px solid rgba(27, 26, 23, 0.12);
-    border-radius: 16px;
-    box-shadow: 0 -6px 12px rgba(27, 26, 23, 0.08);
-    position: relative;
-  }
-
-  .accordion summary::before {
-    content: "";
     position: absolute;
-    top: -11px;
-    left: 14px;
-    width: 92px;
-    height: 12px;
-    background: var(--color-paper);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: clamp(2px, calc(1px + var(--stack) * 1px), 5px);
+    height: calc(15px + (var(--stack) - 1) * 3px);
     border: none;
-    border-top: 1px solid rgba(27, 26, 23, 0.12);
-    border-left: 1px solid rgba(27, 26, 23, 0.12);
-    border-right: 1px solid rgba(27, 26, 23, 0.12);
-    border-bottom: none;
-    border-radius: 10px 10px 0 0;
+    border-radius: 2px;
+    background: var(--marker-color);
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.92;
+    transition: transform 0.18s ease, opacity 0.18s ease;
   }
 
-  .accordion summary::-webkit-details-marker {
-    display: none;
+  .marker.thoughts {
+    --marker-color: #e45826;
   }
 
-  .summary-index {
-    font-size: 0.7rem;
+  .marker.echoes {
+    --marker-color: #f0a500;
+  }
+
+  .marker.mixed {
+    background: linear-gradient(180deg, #e45826 0%, #f0a500 100%);
+  }
+
+  .marker:hover,
+  .marker:focus-visible {
+    transform: translate(-50%, calc(-50% - 3px));
+    opacity: 1;
+    outline: none;
+  }
+
+  .marker::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background: rgba(27, 26, 23, 0.92);
+    color: #f8f4ee;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    padding: 6px 8px;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.14s ease;
+  }
+
+  .marker:hover::after,
+  .marker:focus-visible::after {
+    opacity: 1;
+  }
+
+  .count {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-muted);
-    letter-spacing: 0.2em;
-    font-family: var(--font-display);
   }
 
-  .summary-title {
-    font-size: 1.75rem;
-    font-weight: 400;
-  }
-
-  .accordion summary::after {
-    content: "v";
-    font-size: 0.9rem;
+  .date-label {
+    position: absolute;
+    left: 50%;
+    top: 15px;
+    transform: translateX(-50%);
+    font-size: 0.64rem;
+    letter-spacing: 0.09em;
     color: var(--color-muted);
-    transform: rotate(0deg);
-    transition: transform 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
   }
 
-  .accordion[open] summary {
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-color: transparent;
+  .marker-label {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
   }
 
-  .accordion[open] summary::after {
-    transform: rotate(180deg);
-    color: var(--color-ink);
+  .snake-node:hover .marker-label,
+  .snake-node.active .marker-label {
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  .accordion-content {
-    padding: 10px 12px 12px;
-    background: var(--color-paper);
-    border: none;
-    border-top: none;
-    border-radius: 0 0 16px 16px;
+  .recent {
+    border-top: 1px solid rgba(27, 26, 23, 0.18);
+    padding-top: 14px;
+    display: grid;
+    gap: 8px;
+    max-width: 520px;
   }
 
-  .post-list {
+  .recent h2 {
+    margin: 0;
+    font-family: 'Junction', var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+  }
+
+  .recent ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: 1px solid rgba(27, 26, 23, 0.12);
-  }
-
-  .post-list li {
-    display: grid;
-    grid-template-columns: 40px 1fr auto;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(27, 26, 23, 0.12);
-    align-items: center;
-  }
-
-  .post-index {
-    font-weight: 600;
-    color: var(--color-muted);
-  }
-
-  .post-title {
-    font-weight: 600;
-  }
-
-  .post-meta {
-    font-size: 0.9rem;
-    color: var(--color-muted);
-  }
-
-  .post-date {
-    font-size: 0.85rem;
-    color: var(--color-muted);
-  }
-
-  .stars {
-    font-size: 0.85rem;
-    color: var(--color-accent);
-    margin-left: 4px;
-  }
-
-  .gallery-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 18px;
-  }
-
-  .gallery-card {
-    background: rgba(255, 255, 255, 0.35);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: 0 12px 26px rgba(27, 26, 23, 0.08);
     display: grid;
   }
 
-  .gallery-thumb {
-    height: 120px;
-    overflow: hidden;
+  .recent li + li {
+    border-top: 1px solid rgba(27, 26, 23, 0.1);
   }
 
-  .gallery-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: saturate(0.9);
-    transition: transform 0.35s ease;
-  }
-
-  .gallery-card:hover .gallery-thumb img {
-    transform: scale(1.1);
-  }
-
-  .gallery-info {
-    padding: 12px 12px 14px;
+  .recent a {
     display: grid;
-    gap: 6px;
+    gap: 4px;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px 0;
   }
 
-  .gallery-info h3 {
-    margin: 0;
-    font-size: 0.95rem;
+  .recent .title {
+    font-size: 0.98rem;
   }
 
-  .gallery-info p {
-    margin: 0;
-    font-size: 0.85rem;
+  .recent .meta {
+    font-size: 0.76rem;
     color: var(--color-muted);
+    letter-spacing: 0.05em;
   }
 
-  .gallery-meta {
-    font-size: 0.82rem;
-  }
-
-  .echoes-card {
-    display: grid;
-    grid-template-columns: minmax(220px, 0.6fr) 1fr;
-    gap: 18px;
-    background: rgba(255, 255, 255, 0.35);
-    border-radius: var(--radius-lg);
-    padding: 14px;
-    align-items: center;
-    box-shadow: 0 12px 26px rgba(27, 26, 23, 0.08);
-    overflow: hidden;
-  }
-
-  .echoes-card img {
-    width: 100%;
-    border-radius: var(--radius-md);
-    object-fit: cover;
-    transition: transform 0.35s ease;
-  }
-
-  .echoes-card:hover img {
-    transform: scale(1.1);
-  }
-
-  .echoes-text h3 {
-    margin: 0 0 8px;
-    font-size: 1rem;
-  }
-
-  .echoes-text p {
-    margin: 0 0 8px;
-    color: var(--color-muted);
-    line-height: 1.5;
-  }
-
-  @media (max-width: 760px) {
-    .post-list li {
-      grid-template-columns: 32px 1fr;
-    }
-
-    .post-date {
-      display: none;
-    }
-
-    .echoes-card {
-      grid-template-columns: 1fr;
+  @media (max-width: 720px) {
+    .snake-canvas {
+      margin: 0;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html.js .reveal {
-      transition: none;
-      opacity: 1;
-      transform: none;
+  @media (min-width: 1180px) {
+    .timeline-body {
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 30px;
     }
 
-    .hero-media img,
-    .gallery-thumb img,
-    .echoes-card img {
-      transition: none;
-      transform: none;
+    .recent {
+      max-width: none;
+      border-top: none;
+      border-left: 1px solid rgba(27, 26, 23, 0.14);
+      padding-top: 0;
+      padding-left: 18px;
+      margin-top: 10px;
     }
   }
 </style>
