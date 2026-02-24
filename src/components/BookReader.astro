@@ -1,0 +1,717 @@
+---
+interface Props {
+  summary?: string;
+  charLimit?: number;
+  lineLimit?: number;
+}
+
+const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
+---
+
+<section
+  class="book-reader"
+  data-book-reader
+  data-char-limit={charLimit}
+  data-line-limit={lineLimit}
+  data-char-per-line="34"
+>
+  <div class="book-spread" data-book-spread>
+    <button
+      type="button"
+      class="hover-nav hover-prev"
+      data-book-hover-prev
+      aria-label="이전 스프레드"
+    >
+      ‹
+    </button>
+    <article class="book-page left" data-book-left></article>
+    <article class="book-page right" data-book-right></article>
+    <button
+      type="button"
+      class="hover-nav hover-next"
+      data-book-hover-next
+      aria-label="다음 스프레드"
+    >
+      ›
+    </button>
+  </div>
+
+  <article class="book-scroll" data-book-scroll></article>
+
+  <div class="book-controls" data-book-controls>
+    <button type="button" class="book-btn" data-book-prev aria-label="이전 스프레드">
+      이전
+    </button>
+    <button type="button" class="book-btn" data-book-next aria-label="다음 스프레드">
+      다음
+    </button>
+    <p class="book-indicator" data-book-indicator aria-live="polite"></p>
+  </div>
+
+  <div class="book-source" data-book-source>
+    {summary && <p class="book-lead">{summary}</p>}
+    <slot />
+  </div>
+</section>
+
+<script>
+  const roots = document.querySelectorAll('[data-book-reader]');
+
+  const removeIds = (node) => {
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    node.removeAttribute('id');
+    node.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+  };
+
+  roots.forEach((root) => {
+    const source = root.querySelector('[data-book-source]');
+    const spread = root.querySelector('[data-book-spread]');
+    const scroll = root.querySelector('[data-book-scroll]');
+    const leftPage = root.querySelector('[data-book-left]');
+    const rightPage = root.querySelector('[data-book-right]');
+    const controls = root.querySelector('[data-book-controls]');
+    const indicator = root.querySelector('[data-book-indicator]');
+    const prevBtn = root.querySelector('[data-book-prev]');
+    const nextBtn = root.querySelector('[data-book-next]');
+    const hoverPrev = root.querySelector('[data-book-hover-prev]');
+    const hoverNext = root.querySelector('[data-book-hover-next]');
+
+    if (!source || !spread || !scroll || !leftPage || !rightPage || !controls || !indicator || !prevBtn || !nextBtn) {
+      return;
+    }
+
+    const baseCharLimit = Number(root.getAttribute('data-char-limit') || 1100);
+    const baseLineLimit = Number(root.getAttribute('data-line-limit') || 30);
+    const charPerLine = Number(root.getAttribute('data-char-per-line') || 34);
+
+    const blockTemplates = Array.from(source.children).map((node) => node.cloneNode(true));
+    source.innerHTML = '';
+
+    const estimate = (node) => {
+      const text = (node.textContent || '').trim();
+      const chars = text.length;
+      const lines = Math.max(1, Math.ceil(chars / charPerLine));
+      return { chars, lines };
+    };
+
+    let pages = [];
+    let spreadIndex = 0;
+    let scrollIntent = 0;
+    let lastScrollY = window.scrollY;
+    let snapLock = false;
+    let forceScrollMode = false;
+
+    const MIN_WIDE_WIDTH = 1024;
+    const MIN_WIDE_HEIGHT = 680;
+    const MIN_FULL_HEIGHT_RATIO = 0.72;
+
+    const scrollFrag = document.createDocumentFragment();
+    blockTemplates.forEach((node) => {
+      scrollFrag.appendChild(node.cloneNode(true));
+    });
+    scroll.appendChild(scrollFrag);
+
+    const buildPages = (charLimit, lineLimit) => {
+      const nextPages = [];
+      let current = [];
+      let charCount = 0;
+      let lineCount = 0;
+
+      blockTemplates.forEach((node) => {
+        const { chars, lines } = estimate(node);
+        const exceedChars = charCount + chars > charLimit;
+        const exceedLines = lineCount + lines > lineLimit;
+
+        if (current.length > 0 && (exceedChars || exceedLines)) {
+          nextPages.push(current);
+          current = [];
+          charCount = 0;
+          lineCount = 0;
+        }
+
+        current.push(node);
+        charCount += chars;
+        lineCount += lines;
+      });
+
+      if (current.length > 0) nextPages.push(current);
+      if (nextPages.length === 0) nextPages.push([]);
+      return nextPages;
+    };
+
+    const buildPagesByLayout = (spreadHeight) => {
+      const spreadRect = spread.getBoundingClientRect();
+      const spreadWidth = spreadRect.width || root.clientWidth || 800;
+      const gap = 12;
+      const pageWidth = Math.max(320, (spreadWidth - gap) / 2);
+      const measure = document.createElement('article');
+      measure.className = 'book-page measure-page';
+      measure.style.width = `${pageWidth}px`;
+      measure.style.height = `${spreadHeight}px`;
+      root.appendChild(measure);
+
+      const nextPages = [];
+      let current = [];
+      let hasUnresolvableOverflow = false;
+      const splitTextBySentence = (text) => {
+        const normalized = (text || '').trim();
+        if (!normalized) return [];
+        const chunks = normalized
+          .split(/(?<=[.!?。！？]|다\.)\s+/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+        if (chunks.length > 1) return chunks;
+        return normalized.split(/\s+/).filter(Boolean);
+      };
+
+      const splitTemplate = (tpl) => {
+        if (tpl.nodeType !== Node.ELEMENT_NODE) return [tpl];
+        const el = tpl;
+        const tag = el.tagName;
+
+        // Wrapper blocks from markdown renderers often contain many children.
+        // Unwrapping prevents a single mega-block from being clipped in wide mode.
+        if ((tag === 'DIV' || tag === 'SECTION' || tag === 'ARTICLE' || tag === 'BLOCKQUOTE') && el.children.length > 1) {
+          return Array.from(el.children).map((child) => child.cloneNode(true));
+        }
+
+        // Split long lists by item so one giant list block does not overflow a single page.
+        if ((tag === 'UL' || tag === 'OL') && el.children.length > 1) {
+          const listTag = tag.toLowerCase();
+          return Array.from(el.children).map((item) => {
+            const list = document.createElement(listTag);
+            list.appendChild(item.cloneNode(true));
+            return list;
+          });
+        }
+
+        if (tag === 'P') {
+          const lines = splitTextBySentence(el.textContent || '');
+          if (lines.length > 1) {
+            return lines.map((line) => {
+              const p = document.createElement('p');
+              p.textContent = line;
+              return p;
+            });
+          }
+        }
+
+        if (tag === 'LI') {
+          const lines = splitTextBySentence(el.textContent || '');
+          if (lines.length > 1) {
+            return lines.map((line) => {
+              const ul = document.createElement('ul');
+              const li = document.createElement('li');
+              li.textContent = line;
+              ul.appendChild(li);
+              return ul;
+            });
+          }
+        }
+
+        return [tpl];
+      };
+
+      const appendTemplate = (tpl) => {
+        const clone = tpl.cloneNode(true);
+        removeIds(clone);
+        measure.appendChild(clone);
+      };
+
+      const pending = [...blockTemplates];
+      while (pending.length > 0) {
+        const tpl = pending.shift();
+        appendTemplate(tpl);
+
+        if (measure.scrollHeight <= measure.clientHeight + 1) {
+          current.push(tpl);
+          continue;
+        }
+
+        if (current.length === 0) {
+          // Try to split oversized blocks before giving up wide mode.
+          measure.removeChild(measure.lastChild);
+          const split = splitTemplate(tpl);
+          if (split.length > 1) {
+            pending.unshift(...split);
+            continue;
+          }
+
+          // Still too large after split attempt: mark fallback to scroll mode.
+          hasUnresolvableOverflow = true;
+          appendTemplate(tpl);
+          current.push(tpl);
+          nextPages.push(current);
+          current = [];
+          measure.innerHTML = '';
+          continue;
+        }
+
+        measure.removeChild(measure.lastChild);
+        nextPages.push(current);
+        current = [];
+        measure.innerHTML = '';
+        appendTemplate(tpl);
+
+        if (measure.scrollHeight > measure.clientHeight + 6) {
+          measure.removeChild(measure.lastChild);
+          const split = splitTemplate(tpl);
+          if (split.length > 1) {
+            pending.unshift(...split);
+            continue;
+          }
+          hasUnresolvableOverflow = true;
+          appendTemplate(tpl);
+        }
+
+        current.push(tpl);
+      }
+
+      if (current.length > 0) nextPages.push(current);
+      if (nextPages.length === 0) nextPages.push([]);
+
+      // Second-pass normalization: if any page still overflows, move the last block
+      // to the next page until it fits (prevents bottom-line clipping).
+      for (let i = 0; i < nextPages.length; i += 1) {
+        const page = nextPages[i];
+        if (!page || page.length === 0) continue;
+
+        const renderMeasure = (nodes) => {
+          measure.innerHTML = '';
+          nodes.forEach((tpl) => appendTemplate(tpl));
+        };
+
+        renderMeasure(page);
+        while (measure.scrollHeight > measure.clientHeight + 6 && page.length > 1) {
+          const moved = page.pop();
+          if (!nextPages[i + 1]) nextPages[i + 1] = [];
+          nextPages[i + 1].unshift(moved);
+          renderMeasure(page);
+        }
+
+        if (measure.scrollHeight > measure.clientHeight + 6) {
+          hasUnresolvableOverflow = true;
+        }
+      }
+
+      measure.remove();
+      return { pages: nextPages, hasUnresolvableOverflow };
+    };
+
+    const renderSpread = () => {
+      const totalPages = pages.length;
+      const totalSpreads = Math.ceil(totalPages / 2);
+      if (spreadIndex > totalSpreads - 1) spreadIndex = Math.max(0, totalSpreads - 1);
+      const leftIndex = spreadIndex * 2;
+      const rightIndex = leftIndex + 1;
+
+      leftPage.innerHTML = '';
+      rightPage.innerHTML = '';
+
+      const fillPage = (container, pageNodes) => {
+        const frag = document.createDocumentFragment();
+        pageNodes.forEach((node) => {
+          const clone = node.cloneNode(true);
+          removeIds(clone);
+          frag.appendChild(clone);
+        });
+        container.appendChild(frag);
+      };
+
+      if (pages[leftIndex]) fillPage(leftPage, pages[leftIndex]);
+      if (pages[rightIndex]) fillPage(rightPage, pages[rightIndex]);
+
+      const rebalanceIfOverflow = (pageIndex, container) => {
+        if (!pages[pageIndex] || pages[pageIndex].length === 0) return false;
+        let moved = false;
+        while (container.scrollHeight > container.clientHeight + 6 && pages[pageIndex].length > 1) {
+          const movedNode = pages[pageIndex].pop();
+          if (!pages[pageIndex + 1]) pages[pageIndex + 1] = [];
+          pages[pageIndex + 1].unshift(movedNode);
+          container.innerHTML = '';
+          fillPage(container, pages[pageIndex]);
+          moved = true;
+        }
+        return moved;
+      };
+
+      const leftMoved = rebalanceIfOverflow(leftIndex, leftPage);
+      const rightMoved = rebalanceIfOverflow(rightIndex, rightPage);
+      if (leftMoved || rightMoved) {
+        renderSpread();
+        return;
+      }
+
+      const hasLiveOverflow =
+        leftPage.scrollHeight > leftPage.clientHeight + 6 ||
+        rightPage.scrollHeight > rightPage.clientHeight + 6;
+      if (hasLiveOverflow) {
+        forceScrollMode = true;
+        root.style.removeProperty('--book-spread-h');
+        pages = buildPages(baseCharLimit, baseLineLimit);
+        setWideMode(false);
+        renderSpread();
+        return;
+      }
+
+      const start = leftIndex + 1;
+      const refreshedTotal = pages.length;
+      const end = Math.min(rightIndex + 1, refreshedTotal);
+      indicator.textContent = `현재 ${start}${end > start ? `-${end}` : ''} / 전체 ${refreshedTotal}쪽`;
+      prevBtn.disabled = spreadIndex <= 0;
+      nextBtn.disabled = spreadIndex >= Math.ceil(refreshedTotal / 2) - 1;
+    };
+
+    const goPrev = () => {
+      if (spreadIndex <= 0) return;
+      spreadIndex -= 1;
+      renderSpread();
+    };
+
+    const goNext = () => {
+      const totalSpreads = Math.ceil(pages.length / 2);
+      if (spreadIndex >= totalSpreads - 1) return;
+      spreadIndex += 1;
+      renderSpread();
+    };
+
+    prevBtn.addEventListener('click', goPrev);
+    nextBtn.addEventListener('click', goNext);
+
+    const setWideMode = (wide) => {
+      root.classList.toggle('is-wide', wide);
+      controls.toggleAttribute('hidden', !wide);
+    };
+
+    const mq = window.matchMedia(`(min-width: ${MIN_WIDE_WIDTH}px)`);
+    const isFullHeightWindow = () => {
+      const screenHeight = window.screen?.availHeight || 0;
+      if (!screenHeight) return window.innerHeight >= MIN_WIDE_HEIGHT;
+      return window.innerHeight >= screenHeight * MIN_FULL_HEIGHT_RATIO;
+    };
+    const isWideUsable = () =>
+      mq.matches && window.innerHeight >= MIN_WIDE_HEIGHT && isFullHeightWindow();
+
+    const getSnapTop = () => {
+      const rect = root.getBoundingClientRect();
+      const spreadH = parseFloat(getComputedStyle(root).getPropertyValue('--book-spread-h')) || 0;
+      const controlsH = controls.getBoundingClientRect().height || 0;
+      const gap = 10;
+      const packH = spreadH + controlsH + gap;
+      const topOffset = Math.max(8, Math.min(84, (window.innerHeight - packH) / 2));
+      return window.scrollY + rect.top - topOffset;
+    };
+
+    const tryAutoSnap = (force = false) => {
+      if (!root.classList.contains('is-wide') || snapLock) return;
+      const rect = root.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const entered = rect.top <= vh * 0.72 && rect.bottom >= vh * 0.28;
+      if (!entered) return;
+      if (!force && scrollIntent < 180) return;
+
+      snapLock = true;
+      const snapTop = getSnapTop();
+      window.scrollTo({
+        top: Math.max(0, snapTop),
+        behavior: 'smooth'
+      });
+      scrollIntent = 0;
+      window.setTimeout(() => {
+        snapLock = false;
+      }, 420);
+    };
+
+    const recalcForViewport = () => {
+      const wide = !forceScrollMode && isWideUsable();
+      if (!wide) {
+        root.style.removeProperty('--book-spread-h');
+        pages = buildPages(baseCharLimit, baseLineLimit);
+        setWideMode(false);
+        renderSpread();
+        return;
+      }
+
+      const spreadH = Math.max(620, Math.floor(window.innerHeight * 0.76));
+      root.style.setProperty('--book-spread-h', `${spreadH}px`);
+
+      const layoutResult = buildPagesByLayout(spreadH);
+      pages = layoutResult.pages;
+      renderSpread();
+
+      // Never keep wide mode if any content still overflows; fallback avoids omitted text.
+      if (layoutResult.hasUnresolvableOverflow) {
+        forceScrollMode = true;
+        root.style.removeProperty('--book-spread-h');
+        pages = buildPages(baseCharLimit, baseLineLimit);
+        setWideMode(false);
+        renderSpread();
+        return;
+      }
+
+      requestAnimationFrame(tryAutoSnap);
+    };
+
+    const applyMode = () => {
+      const wide = !forceScrollMode && isWideUsable();
+      setWideMode(wide);
+      scrollIntent = 0;
+      lastScrollY = window.scrollY;
+      snapLock = false;
+      recalcForViewport();
+    };
+
+    const onKeydown = (event) => {
+      if (!root.classList.contains('is-wide')) return;
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        goPrev();
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        goNext();
+      }
+    };
+
+    pages = buildPages(baseCharLimit, baseLineLimit);
+    renderSpread();
+    applyMode();
+    if (hoverPrev && hoverNext) {
+      hoverPrev.addEventListener('click', goPrev);
+      hoverNext.addEventListener('click', goNext);
+    }
+    mq.addEventListener('change', applyMode);
+    window.addEventListener('resize', () => {
+      if (isWideUsable()) {
+        forceScrollMode = false;
+      }
+      recalcForViewport();
+    });
+    window.addEventListener('keydown', onKeydown);
+    window.addEventListener(
+      'scroll',
+      () => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollY;
+        lastScrollY = currentY;
+        if (delta > 0) {
+          scrollIntent += delta;
+        }
+        tryAutoSnap(false);
+      },
+      { passive: true }
+    );
+
+    const observer = new IntersectionObserver(() => tryAutoSnap(false), { threshold: 0.2 });
+    observer.observe(root);
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        recalcForViewport();
+      });
+    }
+  });
+</script>
+
+<style>
+  .book-reader {
+    --book-ink: #202226;
+    --book-muted: #6d737c;
+    --book-border: #d9dde3;
+    --book-paper: #fcfcfd;
+    --book-paper-alt: #f5f7fa;
+    --book-accent: #2f6fec;
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    color: var(--book-ink);
+    overflow-x: clip;
+  }
+
+  .book-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 2px 2px 0;
+  }
+
+  .book-btn {
+    min-width: 44px;
+    border: 1px solid #d7dde7;
+    background: rgba(252, 252, 253, 0.8);
+    color: #6a7280;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 0.72rem;
+    font-weight: 480;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+  }
+
+  .book-btn:hover:not(:disabled) {
+    border-color: #a9bad9;
+    background: #f7faff;
+    color: var(--book-accent);
+  }
+
+  .book-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .book-indicator {
+    margin: 0 0 0 4px;
+    color: var(--book-muted);
+    font-size: 0.74rem;
+    letter-spacing: 0.02em;
+    min-height: 0;
+    text-align: right;
+    padding: 0 4px;
+  }
+
+  .book-spread {
+    display: none;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-page,
+  .book-scroll {
+    min-width: 0;
+    border: 1px solid var(--book-border);
+    border-radius: var(--radius-lg);
+    background: var(--book-paper);
+    padding: 20px 18px 16px;
+    min-height: 620px;
+    box-shadow: 0 6px 18px rgba(18, 25, 38, 0.06);
+  }
+
+  .book-page :global(h2),
+  .book-page :global(h3),
+  .book-scroll :global(h2),
+  .book-scroll :global(h3) {
+    margin: 20px 0 10px;
+    font-family: 'JN_leanring', var(--font-display);
+    font-weight: 300;
+    color: #15181d;
+  }
+
+  .book-page :global(p),
+  .book-page :global(li),
+  .book-scroll :global(p),
+  .book-scroll :global(li) {
+    line-height: 1.74;
+    color: #454b55;
+    font-size: 1.01rem;
+    overflow-wrap: anywhere;
+  }
+
+  .book-page :global(p),
+  .book-scroll :global(p) {
+    margin: 0 0 13px;
+  }
+
+  .book-page :global(ul),
+  .book-page :global(ol),
+  .book-scroll :global(ul),
+  .book-scroll :global(ol) {
+    margin: 0 0 14px;
+    padding-left: 20px;
+  }
+
+  .book-lead {
+    margin: 0 0 12px;
+    color: #252b34;
+    font-weight: 520;
+    line-height: 1.6;
+  }
+
+  .book-source {
+    display: none;
+  }
+
+  .book-reader.is-wide .book-spread {
+    display: grid;
+    height: var(--book-spread-h, 76vh);
+  }
+
+  .book-reader.is-wide .book-scroll {
+    display: none;
+  }
+
+  .book-reader.is-wide .book-page {
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .book-page.measure-page {
+    position: absolute !important;
+    left: -99999px !important;
+    top: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .hover-nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 66px;
+    border: none;
+    background: transparent;
+    color: transparent;
+    font-size: 2.2rem;
+    cursor: pointer;
+    z-index: 5;
+    transition: background-color 0.16s ease, color 0.16s ease;
+  }
+
+  .hover-prev {
+    left: 0;
+    border-radius: 14px 0 0 14px;
+    --dir: right;
+  }
+
+  .hover-next {
+    right: 0;
+    border-radius: 0 14px 14px 0;
+    --dir: left;
+  }
+
+  .hover-nav:hover {
+    background: linear-gradient(
+      to var(--dir),
+      rgba(47, 111, 236, 0.18) 0%,
+      rgba(47, 111, 236, 0) 88%
+    );
+    color: rgba(47, 111, 236, 0.95);
+  }
+
+  @media (max-width: 1023px) {
+    .book-controls {
+      display: none;
+    }
+    .book-reader {
+      max-width: 760px;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .book-scroll {
+      min-height: 0;
+      padding: 22px 18px 18px;
+    }
+
+    .hover-nav {
+      display: none;
+    }
+
+  }
+</style>

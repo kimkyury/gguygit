@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import BookReader from '../components/BookReader.astro';
 
 const { title, date, rating, youtube, summary } = Astro.props;
 
@@ -43,26 +44,22 @@ const ratingText =
       </div>
     </header>
 
-    <div class="post-grid">
-      <div class="media">
-        {youtubeId ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${youtubeId}`}
-            title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        ) : (
-          <div class="media-placeholder">No video</div>
-        )}
-      </div>
-      <div class="content">
-        {summary && <p class="summary">{summary}</p>}
-        <div class="body">
-          <slot />
-        </div>
-      </div>
+    <div class="media">
+      {youtubeId ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      ) : (
+        <div class="media-placeholder">No video</div>
+      )}
     </div>
+
+    <BookReader summary={summary}>
+      <slot />
+    </BookReader>
   </article>
 </BaseLayout>
 
@@ -99,13 +96,6 @@ const ratingText =
     font-size: 0.9rem;
   }
 
-  .post-grid {
-    display: grid;
-    grid-template-columns: minmax(220px, 0.25fr) 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-
   .media {
     position: relative;
     border-radius: 18px;
@@ -131,27 +121,4 @@ const ratingText =
     font-size: 0.8rem;
   }
 
-  .content {
-    display: grid;
-    gap: 12px;
-  }
-
-  .summary {
-    margin: 0;
-    font-size: 1rem;
-    color: var(--color-ink);
-    line-height: 1.6;
-  }
-
-  .body :global(p) {
-    margin: 0 0 12px;
-    color: var(--color-muted);
-    line-height: 1.6;
-  }
-
-  @media (max-width: 800px) {
-    .post-grid {
-      grid-template-columns: 1fr;
-    }
-  }
 </style>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BookReader from '../../components/BookReader.astro';
 
 export function getStaticPaths() {
   return [];
@@ -10,5 +11,8 @@ const { slug } = Astro.params;
 
 <BaseLayout title={`Notes: ${slug}`}>
   <h1>Notes Detail</h1>
-  <p>Slug: {slug}</p>
+  <BookReader summary="앎 카테고리용 공통 책 형식 리더 템플릿입니다.">
+    <p>Slug: {slug}</p>
+    <p>글 본문은 페이지 분할 규칙(문자수/줄수)에 따라 와이드 화면에서 분할됩니다.</p>
+  </BookReader>
 </BaseLayout>
