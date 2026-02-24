@@ -1,9 +1,9 @@
 ---
-import RecordPostLayout from '../../layouts/RecordPostLayout.astro';
+import ThoughtsPostLayout from '../../layouts/ThoughtsPostLayout.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('record');
+  const entries = await getCollection('thoughts');
   return entries.map((entry) => ({
     params: { slug: entry.slug },
     props: { entry }
@@ -16,7 +16,7 @@ const formatDate = (date: Date) =>
   date.toISOString().slice(0, 10).replace(/-/g, '.');
 ---
 
-<RecordPostLayout
+<ThoughtsPostLayout
   title={entry.data.title}
   date={formatDate(entry.data.date)}
   cover={entry.data.cover}
@@ -24,4 +24,4 @@ const formatDate = (date: Date) =>
   headings={headings}
 >
   <Content />
-</RecordPostLayout>
+</ThoughtsPostLayout>

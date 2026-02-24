@@ -13,7 +13,7 @@ const echoes = defineCollection({
   })
 });
 
-const record = defineCollection({
+const thoughts = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
@@ -24,4 +24,4 @@ const record = defineCollection({
   })
 });
 
-export const collections = { echoes, record };
+export const collections = { echoes, thoughts };

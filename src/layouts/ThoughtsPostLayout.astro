@@ -6,10 +6,10 @@ const tocItems = Array.isArray(headings) ? headings.filter((item) => item.depth 
 ---
 
 <BaseLayout title={title}>
-  <article class="record-post">
+  <article class="thoughts-post">
     <header class="post-header">
       <div class="post-bar">
-        <span>Record</span>
+        <span>Thoughts</span>
         <span>{date}</span>
       </div>
       {cover && (
@@ -42,7 +42,7 @@ const tocItems = Array.isArray(headings) ? headings.filter((item) => item.depth 
 </BaseLayout>
 
 <style>
-  .record-post {
+  .thoughts-post {
     display: grid;
     gap: 28px;
   }

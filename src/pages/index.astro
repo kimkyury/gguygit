@@ -40,12 +40,12 @@ type Point = { x: number; y: number };
 const toDateKey = (date: Date) => date.toISOString().slice(0, 10);
 const toDisplayDate = (dateKey: string) => dateKey.replace(/-/g, '.');
 
-const recordEntries = await getCollection('record');
+const thoughtsEntries = await getCollection('thoughts');
 const echoesEntries = await getCollection('echoes');
 
 const posts: TimelinePost[] = [
-  ...recordEntries.map((entry) => ({
-    id: `record:${entry.slug}`,
+  ...thoughtsEntries.map((entry) => ({
+    id: `thoughts:${entry.slug}`,
     slug: entry.slug,
     title: entry.data.title,
     date: entry.data.date,

@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const entries = (await getCollection('record')).sort(
+const entries = (await getCollection('thoughts')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 const formatDate = (date: Date) =>
@@ -10,7 +10,7 @@ const formatDate = (date: Date) =>
 ---
 
 <BaseLayout title="Thoughts">
-  <section class="record-list">
+  <section class="thoughts-list">
     <header class="list-header">
       <h1>단상</h1>
       <p>그때그때 떠오른 생각의 토막토막</p>
@@ -35,7 +35,7 @@ const formatDate = (date: Date) =>
 </BaseLayout>
 
 <style>
-  .record-list {
+  .thoughts-list {
     display: grid;
     gap: 24px;
   }
