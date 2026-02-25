@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import BookReader from '../components/BookReader.astro';
+import PostHeroHeader from '../components/PostHeroHeader.astro';
 
 const { title, date, rating, youtube, summary } = Astro.props;
 
@@ -35,14 +36,13 @@ const ratingText =
 
 <BaseLayout title={title}>
   <article class="echoes-post">
-    <header class="post-header">
-      <p class="kicker">Echoes Review</p>
-      <h1>{title}</h1>
-      <div class="meta">
-        <span>{date}</span>
-        {ratingText && <span>{ratingText}</span>}
-      </div>
-    </header>
+    <PostHeroHeader
+      category="여운"
+      title={title}
+      date={date}
+      summary={summary}
+      rightMeta={ratingText ? `${date} · ${ratingText}` : date}
+    />
 
     <div class="media">
       {youtubeId ? (
@@ -66,34 +66,7 @@ const ratingText =
 <style>
   .echoes-post {
     display: grid;
-    gap: 24px;
-  }
-
-  .post-header {
-    display: grid;
-    gap: 10px;
-  }
-
-  .kicker {
-    margin: 0;
-    font-size: 0.72rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-  }
-
-  .post-header h1 {
-    margin: 0;
-    font-family: 'JN_leanring', var(--font-display);
-    font-weight: 300;
-    font-size: clamp(2.1rem, 5vw, 3.1rem);
-  }
-
-  .meta {
-    display: flex;
-    gap: 16px;
-    color: var(--color-muted);
-    font-size: 0.9rem;
+    gap: 28px;
   }
 
   .media {

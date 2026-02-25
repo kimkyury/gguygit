@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import CategoryIndexHeader from '../../components/CategoryIndexHeader.astro';
 
 const entries = (await getCollection('echoes')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -33,10 +34,7 @@ const getYouTubeId = (url?: string) => {
 
 <BaseLayout title="Echoes">
   <section class="echoes-list">
-    <header class="list-header">
-      <h1>여운</h1>
-      <p>노래, 영화, 책, 사람</p>
-    </header>
+    <CategoryIndexHeader title="여운" description="노래, 영화, 책, 사람" />
 
     {entries.length === 0 ? (
       <p class="empty">아직 등록된 문화감상 포스팅이 없습니다.</p>
@@ -95,21 +93,6 @@ const getYouTubeId = (url?: string) => {
   .echoes-list {
     display: grid;
     gap: 24px;
-  }
-
-  .list-header {
-    text-align: right;
-  }
-
-  .list-header h1 {
-    margin: 0;
-    font-family: 'JN_leanring', var(--font-display);
-    font-size: clamp(2rem, 4vw, 3rem);
-  }
-
-  .list-header p {
-    margin: 8px 0 0;
-    color: var(--color-muted);
   }
 
   .list {

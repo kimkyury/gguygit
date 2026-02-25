@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BookReader from '../../components/BookReader.astro';
+import PostHeroHeader from '../../components/PostHeroHeader.astro';
 
 export function getStaticPaths() {
   return [];
@@ -10,9 +11,23 @@ const { slug } = Astro.params;
 ---
 
 <BaseLayout title={`Bundles: ${slug}`}>
-  <h1>Bundles Detail</h1>
-  <BookReader summary="보따리 카테고리용 공통 책 형식 리더 템플릿입니다.">
-    <p>Slug: {slug}</p>
-    <p>좌우 화살표 키로 스프레드를 넘기고, 모바일에서는 스크롤로 읽습니다.</p>
-  </BookReader>
+  <article class="category-post">
+    <PostHeroHeader
+      category="보따리"
+      title="Bundles Detail"
+      summary="보따리 카테고리용 공통 책 형식 리더 템플릿입니다."
+      rightMeta={slug ?? ''}
+    />
+    <BookReader summary="보따리 카테고리용 공통 책 형식 리더 템플릿입니다.">
+      <p>Slug: {slug}</p>
+      <p>좌우 화살표 키로 스프레드를 넘기고, 모바일에서는 스크롤로 읽습니다.</p>
+    </BookReader>
+  </article>
 </BaseLayout>
+
+<style>
+  .category-post {
+    display: grid;
+    gap: 28px;
+  }
+</style>

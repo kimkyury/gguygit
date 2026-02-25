@@ -1,8 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryIndexHeader from '../../components/CategoryIndexHeader.astro';
 ---
 
 <BaseLayout title="Notes">
-  <h1>앎</h1>
-  <p> 보니까 스치고 쓰니까 고이고</p>
+  <section class="category-index">
+    <CategoryIndexHeader title="앎" description="보니까 스치고 쓰니까 고이고" />
+  </section>
 </BaseLayout>
+
+<style>
+  .category-index {
+    display: grid;
+    gap: 24px;
+  }
+</style>

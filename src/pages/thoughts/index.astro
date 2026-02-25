@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import CategoryIndexHeader from '../../components/CategoryIndexHeader.astro';
 
 const entries = (await getCollection('thoughts')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -11,10 +12,7 @@ const formatDate = (date: Date) =>
 
 <BaseLayout title="Thoughts">
   <section class="thoughts-list">
-    <header class="list-header">
-      <h1>단상</h1>
-      <p>그때그때 떠오른 생각의 토막토막</p>
-    </header>
+    <CategoryIndexHeader title="단상" description="그때그때 떠오른 생각의 토막토막" />
 
     {entries.length === 0 ? (
       <p class="empty">아직 기록 포스팅이 없습니다.</p>
@@ -38,17 +36,6 @@ const formatDate = (date: Date) =>
   .thoughts-list {
     display: grid;
     gap: 24px;
-  }
-
-  .list-header h1 {
-    margin: 0;
-    font-family: 'JN_leanring', var(--font-display);
-    font-size: clamp(2rem, 4vw, 3rem);
-  }
-
-  .list-header p {
-    margin: 8px 0 0;
-    color: var(--color-muted);
   }
 
   .list {

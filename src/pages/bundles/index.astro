@@ -1,8 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryIndexHeader from '../../components/CategoryIndexHeader.astro';
 ---
 
 <BaseLayout title="Bundles">
-  <h1>보따리</h1>
-  <p>다르고 싶었으나 그 마음이 제일 흔했다</p>
+  <section class="category-index">
+    <CategoryIndexHeader title="보따리" description="다르고 싶었으나 그 마음이 제일 흔했다" />
+  </section>
 </BaseLayout>
+
+<style>
+  .category-index {
+    display: grid;
+    gap: 24px;
+  }
+</style>

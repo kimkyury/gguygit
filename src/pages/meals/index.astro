@@ -1,8 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryIndexHeader from '../../components/CategoryIndexHeader.astro';
 ---
 
 <BaseLayout title="Meals">
-  <h1>끼니</h1>
-  <p>먹는대로 생긴다더라</p>
+  <section class="category-index">
+    <CategoryIndexHeader title="끼니" description="입력:식단, 출력:신체" />
+  </section>
 </BaseLayout>
+
+<style>
+  .category-index {
+    display: grid;
+    gap: 24px;
+  }
+</style>
