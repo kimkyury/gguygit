@@ -19,6 +19,7 @@ const formatDate = (date: Date) =>
 <ThoughtsPostLayout
   title={entry.data.title}
   date={formatDate(entry.data.date)}
+  datePublished={entry.data.date.toISOString()}
   cover={entry.data.cover}
   summary={entry.data.summary}
   headings={headings}
