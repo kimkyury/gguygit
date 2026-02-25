@@ -8,7 +8,7 @@ type TimelinePost = {
   title: string;
   date: Date;
   dateKey: string;
-  categoryKey: 'thoughts' | 'echoes';
+  categoryKey: 'thoughts' | 'echoes' | 'meals';
   categoryLabel: string;
   href: string;
   summary?: string;
@@ -19,7 +19,7 @@ type TimelineGroup = {
   dateKey: string;
   displayDate: string;
   items: TimelinePost[];
-  categories: Array<'thoughts' | 'echoes'>;
+  categories: Array<'thoughts' | 'echoes' | 'meals'>;
 };
 
 type SnakeNode = {
@@ -30,7 +30,7 @@ type SnakeNode = {
   markerX: number;
   group: TimelineGroup;
   stack: number;
-  primary: 'thoughts' | 'echoes';
+  primary: 'thoughts' | 'echoes' | 'meals';
   isMixed: boolean;
   single: TimelinePost | null;
   tooltip: string;
@@ -42,6 +42,7 @@ const toDisplayDate = (dateKey: string) => dateKey.replace(/-/g, '.');
 
 const thoughtsEntries = await getCollection('thoughts');
 const echoesEntries = await getCollection('echoes');
+const mealsEntries = await getCollection('meals');
 
 const posts: TimelinePost[] = [
   ...thoughtsEntries.map((entry) => ({
@@ -64,6 +65,17 @@ const posts: TimelinePost[] = [
     categoryKey: 'echoes' as const,
     categoryLabel: '여운',
     href: `/echoes/${entry.slug}`,
+    summary: entry.data.summary
+  })),
+  ...mealsEntries.map((entry) => ({
+    id: `meals:${entry.slug}`,
+    slug: entry.slug,
+    title: entry.data.title,
+    date: entry.data.date,
+    dateKey: toDateKey(entry.data.date),
+    categoryKey: 'meals' as const,
+    categoryLabel: '끼니',
+    href: `/meals/${entry.slug}`,
     summary: entry.data.summary
   }))
 ].sort((a, b) => b.date.valueOf() - a.date.valueOf());
@@ -213,7 +225,7 @@ const snakePath = buildRoundedPath(
 
 <BaseLayout
   title="Home"
-  description="GGUGIT 홈: thoughts와 echoes를 중심으로 날짜별 기록을 탐색하는 타임라인입니다."
+  description="GGUGIT 홈: thoughts, echoes, meals를 중심으로 날짜별 기록을 탐색하는 타임라인입니다."
 >
   <section class="timeline-home">
     <header class="hero">
@@ -244,6 +256,7 @@ const snakePath = buildRoundedPath(
                     marker: true,
                     thoughts: node.primary === 'thoughts' && !node.isMixed,
                     echoes: node.primary === 'echoes' && !node.isMixed,
+                    meals: node.primary === 'meals' && !node.isMixed,
                     mixed: node.isMixed
                   }}
                   style={{ '--stack': node.stack }}
@@ -396,6 +409,10 @@ const snakePath = buildRoundedPath(
 
   .marker.echoes {
     --marker-color: #f0a500;
+  }
+
+  .marker.meals {
+    --marker-color: #3d8d7a;
   }
 
   .marker.mixed {

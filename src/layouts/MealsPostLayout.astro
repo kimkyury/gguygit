@@ -1,0 +1,46 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import BookReader from '../components/BookReader.astro';
+import PostHeroHeader from '../components/PostHeroHeader.astro';
+
+const { title, date, datePublished, cover, summary } = Astro.props;
+const siteUrl = Astro.site ?? new URL('https://ggugit.pages.dev');
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const image = new URL(cover ?? '/images/meals-1.png', siteUrl).toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: title,
+  description: summary ?? title,
+  image: [image],
+  datePublished,
+  author: {
+    '@type': 'Person',
+    name: 'KKGUL'
+  },
+  mainEntityOfPage: canonical
+};
+---
+
+<BaseLayout
+  title={title}
+  description={summary ?? title}
+  ogImage={cover ?? '/images/meals-1.png'}
+  ogType="article"
+  structuredData={structuredData}
+>
+  <article class="meals-post">
+    <PostHeroHeader category="끼니" title={title} date={date} cover={cover} summary={summary} />
+
+    <BookReader summary={summary}>
+      <slot />
+    </BookReader>
+  </article>
+</BaseLayout>
+
+<style>
+  .meals-post {
+    display: grid;
+    gap: 28px;
+  }
+</style>
