@@ -24,4 +24,15 @@ const thoughts = defineCollection({
   })
 });
 
-export const collections = { echoes, thoughts };
+const meals = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    cover: z.string().optional(),
+    summary: z.string().optional(),
+    tags: z.array(z.string()).optional()
+  })
+});
+
+export const collections = { echoes, thoughts, meals };
