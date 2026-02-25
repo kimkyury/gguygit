@@ -8,7 +8,7 @@ export function getStaticPaths() {
 const { tag } = Astro.params;
 ---
 
-<BaseLayout title={`Tag: ${tag}`}>
+<BaseLayout title={`Tag: ${tag}`} description={`${tag} 태그로 묶인 포스팅 목록입니다.`}>
   <h1>Tag</h1>
   <p>Tag: {tag}</p>
 </BaseLayout>

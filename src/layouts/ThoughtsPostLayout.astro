@@ -3,10 +3,37 @@ import BaseLayout from './BaseLayout.astro';
 import BookReader from '../components/BookReader.astro';
 import PostHeroHeader from '../components/PostHeroHeader.astro';
 
-const { title, date, cover, summary } = Astro.props;
+const { title, date, datePublished, cover, summary } = Astro.props;
+const siteUrl = Astro.site ?? new URL('https://ggugit.pages.dev');
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const image = new URL(cover ?? '/images/hero-main.png', siteUrl).toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description: summary ?? title,
+  image: [image],
+  datePublished,
+  dateModified: datePublished,
+  author: {
+    '@type': 'Person',
+    name: 'KKGUL'
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'GGuGit'
+  },
+  mainEntityOfPage: canonical
+};
 ---
 
-<BaseLayout title={title}>
+<BaseLayout
+  title={title}
+  description={summary ?? title}
+  ogImage={cover ?? '/images/hero-main.png'}
+  ogType="article"
+  structuredData={structuredData}
+>
   <article class="thoughts-post">
     <PostHeroHeader category="단상" title={title} date={date} cover={cover} summary={summary} />
 

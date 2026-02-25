@@ -18,8 +18,10 @@ const formatDate = (date) => date.toISOString().slice(0, 10).replace(/-/g, '.');
 <EchoesPostLayout
   title={entry.data.title}
   date={formatDate(entry.data.date)}
+  datePublished={entry.data.date.toISOString()}
   rating={entry.data.rating}
   youtube={entry.data.youtube}
+  cover={entry.data.cover}
   summary={entry.data.summary}
 >
   <Content />

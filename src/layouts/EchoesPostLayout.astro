@@ -3,9 +3,9 @@ import BaseLayout from './BaseLayout.astro';
 import BookReader from '../components/BookReader.astro';
 import PostHeroHeader from '../components/PostHeroHeader.astro';
 
-const { title, date, rating, youtube, summary } = Astro.props;
+const { title, date, datePublished, rating, youtube, summary, cover } = Astro.props;
 
-const getYouTubeId = (url) => {
+const getYouTubeId = (url?: string): string | null => {
   if (!url) return null;
   try {
     const parsed = new URL(url);
@@ -32,9 +32,64 @@ const ratingValue =
   typeof rating === 'number' ? Math.max(0, Math.min(5, Math.round(rating))) : null;
 const ratingText =
   ratingValue !== null ? '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue) : null;
+const siteUrl = Astro.site ?? new URL('https://ggugit.pages.dev');
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const image = new URL(cover ?? '/images/culture-cover-1.png', siteUrl).toString();
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description: summary ?? title,
+  image: [image],
+  datePublished,
+  dateModified: datePublished,
+  author: {
+    '@type': 'Person',
+    name: 'KKGUL'
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'GGuGit'
+  },
+  mainEntityOfPage: canonical
+};
+
+const reviewSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Review',
+  name: title,
+  reviewBody: summary ?? title,
+  datePublished,
+  author: {
+    '@type': 'Person',
+    name: 'KKGUL'
+  },
+  itemReviewed: {
+    '@type': 'CreativeWork',
+    name: title,
+    image
+  },
+  reviewRating: ratingValue
+    ? {
+        '@type': 'Rating',
+        ratingValue: String(ratingValue),
+        bestRating: '5',
+        worstRating: '1'
+      }
+    : undefined
+};
+
+const structuredData = ratingValue ? reviewSchema : articleSchema;
 ---
 
-<BaseLayout title={title}>
+<BaseLayout
+  title={title}
+  description={summary ?? title}
+  ogImage={cover ?? '/images/culture-cover-1.png'}
+  ogType="article"
+  structuredData={structuredData}
+>
   <article class="echoes-post">
     <PostHeroHeader
       category="여운"

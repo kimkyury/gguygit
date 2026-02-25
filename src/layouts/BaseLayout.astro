@@ -3,9 +3,19 @@ import '../styles/global.css';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteNav from '../components/SiteNav.astro';
+import SeoHead from '../components/SeoHead.astro';
 
-const { title } = Astro.props;
+const {
+  title,
+  description = 'GGUGIT은 thoughts, echoes, meals, notes, bundles를 기록하는 개인 아카이브 블로그입니다.',
+  ogImage = '/images/hero-main.png',
+  ogType = 'website',
+  structuredData
+} = Astro.props;
 const pageTitle = title ? `${title} | GGuGit` : 'GGuGit';
+const siteUrl = Astro.site ?? new URL('https://ggugit.pages.dev');
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const resolvedOgImage = new URL(ogImage, siteUrl).toString();
 ---
 
 <!doctype html>
@@ -13,7 +23,16 @@ const pageTitle = title ? `${title} | GGuGit` : 'GGuGit';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{pageTitle}</title>
+    <SeoHead
+      pageTitle={pageTitle}
+      description={description}
+      canonical={canonical}
+      ogImage={resolvedOgImage}
+      ogType={ogType}
+    />
+    {structuredData && (
+      <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
+    )}
   </head>
   <body>
     <SiteHeader />

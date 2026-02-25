@@ -8,9 +8,27 @@ export function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
+const recipeName = slug ? `Meal ${slug}` : 'Meal';
+const siteUrl = Astro.site ?? new URL('https://ggugit.pages.dev');
+const image = new URL('/images/meals-1.png', siteUrl).toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: recipeName,
+  description: '끼니 카테고리의 레시피/식단 기록 페이지입니다.',
+  image: [image],
+  author: {
+    '@type': 'Person',
+    name: 'KKGUL'
+  }
+};
 ---
 
-<BaseLayout title={`Meals: ${slug}`}>
+<BaseLayout
+  title={`Meals: ${slug}`}
+  description="끼니 카테고리 상세 페이지입니다."
+  structuredData={structuredData}
+>
   <article class="category-post">
     <PostHeroHeader
       category="끼니"

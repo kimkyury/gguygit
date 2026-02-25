@@ -10,7 +10,7 @@ export function getStaticPaths() {
 const { slug } = Astro.params;
 ---
 
-<BaseLayout title={`Bundles: ${slug}`}>
+<BaseLayout title={`Bundles: ${slug}`} description="보따리 카테고리 상세 페이지입니다.">
   <article class="category-post">
     <PostHeroHeader
       category="보따리"
