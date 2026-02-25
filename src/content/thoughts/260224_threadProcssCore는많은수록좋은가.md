@@ -2,7 +2,7 @@
 title: "Thread, Process, Core는 많을수록 좋을까?"
 date: 2026-02-24
 cover: "/images/hero-main.png"
-summary: "Thread, Process, Core는 많을수록 좋을까?"
+summary: "case by case"
 tags: ["CS"]
 ---
 

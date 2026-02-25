@@ -49,7 +49,6 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
   </div>
 
   <div class="book-source" data-book-source>
-    {summary && <p class="book-lead">{summary}</p>}
     <slot />
   </div>
 </section>
@@ -99,11 +98,8 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     let scrollIntent = 0;
     let lastScrollY = window.scrollY;
     let snapLock = false;
-    let forceScrollMode = false;
-
     const MIN_WIDE_WIDTH = 1024;
     const MIN_WIDE_HEIGHT = 680;
-    const MIN_FULL_HEIGHT_RATIO = 0.72;
 
     const scrollFrag = document.createDocumentFragment();
     blockTemplates.forEach((node) => {
@@ -346,7 +342,6 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
         leftPage.scrollHeight > leftPage.clientHeight + 6 ||
         rightPage.scrollHeight > rightPage.clientHeight + 6;
       if (hasLiveOverflow) {
-        forceScrollMode = true;
         root.style.removeProperty('--book-spread-h');
         pages = buildPages(baseCharLimit, baseLineLimit);
         setWideMode(false);
@@ -384,13 +379,7 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     };
 
     const mq = window.matchMedia(`(min-width: ${MIN_WIDE_WIDTH}px)`);
-    const isFullHeightWindow = () => {
-      const screenHeight = window.screen?.availHeight || 0;
-      if (!screenHeight) return window.innerHeight >= MIN_WIDE_HEIGHT;
-      return window.innerHeight >= screenHeight * MIN_FULL_HEIGHT_RATIO;
-    };
-    const isWideUsable = () =>
-      mq.matches && window.innerHeight >= MIN_WIDE_HEIGHT && isFullHeightWindow();
+    const isWideUsable = () => mq.matches && window.innerHeight >= MIN_WIDE_HEIGHT;
 
     const getSnapTop = () => {
       const rect = root.getBoundingClientRect();
@@ -423,16 +412,16 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     };
 
     const recalcForViewport = () => {
-      const wide = !forceScrollMode && isWideUsable();
+      const wide = isWideUsable();
+      setWideMode(wide);
       if (!wide) {
         root.style.removeProperty('--book-spread-h');
         pages = buildPages(baseCharLimit, baseLineLimit);
-        setWideMode(false);
         renderSpread();
         return;
       }
 
-      const spreadH = Math.max(620, Math.floor(window.innerHeight * 0.76));
+      const spreadH = Math.max(660, Math.floor(window.innerHeight * 0.8));
       root.style.setProperty('--book-spread-h', `${spreadH}px`);
 
       const layoutResult = buildPagesByLayout(spreadH);
@@ -441,7 +430,6 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
 
       // Never keep wide mode if any content still overflows; fallback avoids omitted text.
       if (layoutResult.hasUnresolvableOverflow) {
-        forceScrollMode = true;
         root.style.removeProperty('--book-spread-h');
         pages = buildPages(baseCharLimit, baseLineLimit);
         setWideMode(false);
@@ -453,7 +441,7 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     };
 
     const applyMode = () => {
-      const wide = !forceScrollMode && isWideUsable();
+      const wide = isWideUsable();
       setWideMode(wide);
       scrollIntent = 0;
       lastScrollY = window.scrollY;
@@ -481,12 +469,7 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
       hoverNext.addEventListener('click', goNext);
     }
     mq.addEventListener('change', applyMode);
-    window.addEventListener('resize', () => {
-      if (isWideUsable()) {
-        forceScrollMode = false;
-      }
-      recalcForViewport();
-    });
+    window.addEventListener('resize', recalcForViewport);
     window.addEventListener('keydown', onKeydown);
     window.addEventListener(
       'scroll',
@@ -523,11 +506,22 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     --book-accent: #2f6fec;
     display: grid;
     gap: 16px;
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-inline: 0;
     color: var(--book-ink);
     overflow-x: clip;
+  }
+
+  @supports (width: 100dvw) {
+    .book-reader {
+      width: 100dvw;
+      max-width: 100dvw;
+      margin-left: calc(50% - 50dvw);
+      margin-right: calc(50% - 50dvw);
+    }
   }
 
   .book-controls {
@@ -535,7 +529,7 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
-    padding: 2px 2px 0;
+    padding: 2px clamp(10px, 1vw, 16px) 0;
   }
 
   .book-btn {
@@ -586,8 +580,8 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     border: 1px solid var(--book-border);
     border-radius: var(--radius-lg);
     background: var(--book-paper);
-    padding: 20px 18px 16px;
-    min-height: 620px;
+    padding: clamp(20px, 2.2vw, 30px) clamp(18px, 2vw, 28px) clamp(16px, 1.6vw, 22px);
+    min-height: 660px;
     box-shadow: 0 6px 18px rgba(18, 25, 38, 0.06);
   }
 
@@ -624,30 +618,80 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
     padding-left: 20px;
   }
 
-  .book-lead {
-    margin: 0 0 12px;
-    color: #252b34;
-    font-weight: 520;
-    line-height: 1.6;
-  }
-
   .book-source {
     display: none;
   }
 
   .book-reader.is-wide .book-spread {
     display: grid;
-    height: var(--book-spread-h, 76vh);
+    height: var(--book-spread-h, 80vh);
+    background: var(--book-paper);
+    border: 1px solid var(--book-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 26px rgba(18, 25, 38, 0.08);
+    padding: 6px;
+    gap: 12px;
+  }
+
+  .book-reader.is-wide .book-spread::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      to bottom,
+      rgba(120, 128, 141, 0) 0%,
+      rgba(120, 128, 141, 0.55) 14%,
+      rgba(120, 128, 141, 0.55) 86%,
+      rgba(120, 128, 141, 0) 100%
+    );
+    box-shadow:
+      -5px 0 14px rgba(40, 44, 54, 0.08),
+      5px 0 14px rgba(40, 44, 54, 0.08);
+    pointer-events: none;
+    z-index: 2;
   }
 
   .book-reader.is-wide .book-scroll {
     display: none;
   }
 
+  /* One-page mode: dedicated centered layout with balanced left/right gutters. */
+  .book-reader:not(.is-wide) {
+    width: min(1120px, calc(100% - 28px));
+    max-width: min(1120px, calc(100% - 28px));
+    margin-left: auto;
+    margin-right: auto;
+    padding-inline: 0;
+  }
+
+  .book-reader:not(.is-wide) .book-scroll {
+    padding: 24px clamp(18px, 2vw, 30px) 20px;
+  }
+
   .book-reader.is-wide .book-page {
     min-height: 0;
     height: 100%;
     overflow: hidden;
+    border: none;
+    box-shadow: none;
+    border-radius: 8px;
+    background: transparent;
+    padding: clamp(18px, 1.8vw, 26px) clamp(16px, 1.6vw, 24px) clamp(14px, 1.2vw, 18px);
+  }
+
+  /* Keep the center gutter compact, but add comfort space on the outer edges. */
+  .book-reader.is-wide .book-page.left {
+    padding-left: clamp(22px, 2.1vw, 32px);
+    padding-right: clamp(12px, 1.2vw, 18px);
+  }
+
+  .book-reader.is-wide .book-page.right {
+    padding-left: clamp(12px, 1.2vw, 18px);
+    padding-right: clamp(22px, 2.1vw, 32px);
   }
 
   .book-page.measure-page {
@@ -698,15 +742,16 @@ const { summary, charLimit = 1100, lineLimit = 30 } = Astro.props as Props;
       display: none;
     }
     .book-reader {
-      max-width: 760px;
-      width: auto;
+      width: calc(100% - 20px);
+      max-width: calc(100% - 20px);
       margin-left: auto;
       margin-right: auto;
+      padding-inline: 0;
     }
 
     .book-scroll {
       min-height: 0;
-      padding: 22px 18px 18px;
+      padding: 22px 16px 18px;
     }
 
     .hover-nav {
