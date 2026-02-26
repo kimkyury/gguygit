@@ -1,21 +1,36 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import CategoryIndexHeader from '../../components/CategoryIndexHeader.astro';
+import CategoryIndexHeader from '../../../components/CategoryIndexHeader.astro';
 
-const PAGE_SIZE = 7;
 const THOUGHTS_TITLE = '\uB2E8\uC0C1';
 const THOUGHTS_INDEX_DESC = '\uADF8\uB54C\uADF8\uB54C \uB5A0\uC624\uB978 \uC0DD\uAC01\uC758 \uD1A0\uB9C9\uD1A0\uB9C9';
 const THOUGHTS_PAGE_DESC =
   '\uB2E8\uC0C1 \uCE74\uD14C\uACE0\uB9AC: \uADF8\uB54C\uADF8\uB54C \uB5A0\uC624\uB978 \uC0DD\uAC01\uC758 \uD1A0\uB9C9\uD1A0\uB9C9\uC744 \uAE30\uB85D\uD55C \uAE00 \uBAA9\uB85D\uC785\uB2C8\uB2E4.';
-const EMPTY_TEXT = '\uC544\uC9C1 \uAE30\uB85D \uD3EC\uC2A4\uD305\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.';
 
-const allEntries = (await getCollection('thoughts')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
-const currentPage = 1;
-const totalPages = Math.ceil(allEntries.length / PAGE_SIZE);
-const entries = allEntries.slice(0, PAGE_SIZE);
+export async function getStaticPaths() {
+  const pageSize = 7;
+  const entries = (await getCollection('thoughts')).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  );
+  const totalPages = Math.ceil(entries.length / pageSize);
+
+  if (totalPages <= 1) {
+    return [];
+  }
+
+  return Array.from({ length: totalPages - 1 }, (_, idx) => {
+    const currentPage = idx + 2;
+    const start = (currentPage - 1) * pageSize;
+    const pageEntries = entries.slice(start, start + pageSize);
+    return {
+      params: { page: String(currentPage) },
+      props: { entries: pageEntries, currentPage, totalPages }
+    };
+  });
+}
+
+const { entries, currentPage, totalPages } = Astro.props;
 const formatDate = (date: Date) =>
   date.toISOString().slice(0, 10).replace(/-/g, '.');
 const getPageHref = (page: number) =>
@@ -26,38 +41,31 @@ const getPageHref = (page: number) =>
   <section class="thoughts-list">
     <CategoryIndexHeader title={THOUGHTS_TITLE} description={THOUGHTS_INDEX_DESC} />
 
-    {entries.length === 0 ? (
-      <p class="empty">{EMPTY_TEXT}</p>
-    ) : (
-      <>
-        <ul class="list">
-          {entries.map((entry) => (
-            <li>
-              <a href={`/thoughts/${entry.slug}`}>
-                <span class="date">{formatDate(entry.data.date)}</span>
-                <span class="title">{entry.data.title}</span>
-                {entry.data.summary && <span class="summary">{entry.data.summary}</span>}
-              </a>
-            </li>
-          ))}
-        </ul>
-        {totalPages > 1 && (
-          <nav class="pagination" aria-label="Thoughts pagination">
-            {currentPage > 1 ? (
-              <a class="page-link" href={getPageHref(currentPage - 1)}>Previous</a>
-            ) : (
-              <span class="page-link is-disabled">Previous</span>
-            )}
-            <p class="page-state">{currentPage} / {totalPages}</p>
-            {currentPage < totalPages ? (
-              <a class="page-link" href={getPageHref(currentPage + 1)}>Next</a>
-            ) : (
-              <span class="page-link is-disabled">Next</span>
-            )}
-          </nav>
-        )}
-      </>
-    )}
+    <ul class="list">
+      {entries.map((entry) => (
+        <li>
+          <a href={`/thoughts/${entry.slug}`}>
+            <span class="date">{formatDate(entry.data.date)}</span>
+            <span class="title">{entry.data.title}</span>
+            {entry.data.summary && <span class="summary">{entry.data.summary}</span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <nav class="pagination" aria-label="Thoughts pagination">
+      {currentPage > 1 ? (
+        <a class="page-link" href={getPageHref(currentPage - 1)}>Previous</a>
+      ) : (
+        <span class="page-link is-disabled">Previous</span>
+      )}
+      <p class="page-state">{currentPage} / {totalPages}</p>
+      {currentPage < totalPages ? (
+        <a class="page-link" href={getPageHref(currentPage + 1)}>Next</a>
+      ) : (
+        <span class="page-link is-disabled">Next</span>
+      )}
+    </nav>
   </section>
 </BaseLayout>
 
@@ -104,10 +112,6 @@ const getPageHref = (page: number) =>
     grid-column: 2 / -1;
     color: var(--color-muted);
     font-size: 0.9rem;
-  }
-
-  .empty {
-    color: var(--color-muted);
   }
 
   .pagination {
