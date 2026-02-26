@@ -2,7 +2,7 @@
 title: "저녁 가벼운 수프 식단"
 date: 2026-02-25
 summary: "늦은 시간 부담을 줄이기 위한 저녁 수프 중심 식단 기록."
-cover: "/images/meals-3.png"
+cover: "/images/meal/pasta3.jpg"
 tags: ["저녁", "수프", "가벼운식사"]
 ---
 

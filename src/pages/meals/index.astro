@@ -7,10 +7,13 @@ const entries = (await getCollection('meals')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 const mealFallbackCovers = [
-  '/images/meals-1.png',
-  '/images/meals-2.png',
-  '/images/meals-3.png',
-  '/images/meals-4.png'
+  '/images/meal/pasta1.jpg',
+  '/images/meal/pasta2.jpg',
+  '/images/meal/pasta3.jpg',
+  '/images/meal/pasta4.jpg',
+  '/images/meal/pasta5.jpg',
+  '/images/meal/pasta6.jpg',
+  '/images/meal/meals-1.png'
 ];
 const formatDate = (date: Date) =>
   date.toISOString().slice(0, 10).replace(/-/g, '.');

@@ -6,7 +6,7 @@ import PostHeroHeader from '../components/PostHeroHeader.astro';
 const { title, date, datePublished, cover, summary } = Astro.props;
 const siteUrl = Astro.site ?? new URL('https://ggugit.pages.dev');
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
-const image = new URL(cover ?? '/images/meals-1.png', siteUrl).toString();
+const image = new URL(cover ?? '/images/meal/meals-1.png', siteUrl).toString();
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'Recipe',
@@ -25,7 +25,7 @@ const structuredData = {
 <BaseLayout
   title={title}
   description={summary ?? title}
-  ogImage={cover ?? '/images/meals-1.png'}
+  ogImage={cover ?? '/images/meal/meals-1.png'}
   ogType="article"
   structuredData={structuredData}
 >

@@ -2,7 +2,7 @@
 title: "점심 도시락 볼: 탄단지 밸런스 맞추기"
 date: 2026-02-25
 summary: "업무 중 졸림을 줄이기 위해 탄수화물 비율을 조절한 점심 볼 구성."
-cover: "/images/meals-2.png"
+cover: "/images/meal/pasta4.jpg"
 tags: ["점심", "도시락", "밸런스"]
 ---
 

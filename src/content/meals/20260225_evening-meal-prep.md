@@ -2,7 +2,7 @@
 title: "저녁 밀프렙: 닭가슴살 샐러드 볼 한 번에 준비하기"
 date: 2026-02-25
 summary: "퇴근 후 조리 시간을 줄이기 위해 3일치 샐러드 볼을 미리 준비한 기록."
-cover: "/images/meals-2.png"
+cover: "/images/meal/pasta2.jpg"
 tags: ["밀프렙", "저녁", "샐러드"]
 ---
 

@@ -2,7 +2,7 @@
 title: "주말 브런치: 오픈 토스트 2종"
 date: 2026-02-25
 summary: "주말에 간단히 만들 수 있는 오픈 토스트 두 가지 조합 기록."
-cover: "/images/meals-4.png"
+cover: "/images/meal/pasta5.jpg"
 tags: ["브런치", "토스트", "주말식단"]
 ---
 

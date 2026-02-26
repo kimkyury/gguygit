@@ -2,7 +2,7 @@
 title: "고단백 아침 루틴: 15분 플랜"
 date: 2026-02-25
 summary: "아침 시간 15분 안에 단백질과 포만감을 챙기는 간단한 식단 루틴."
-cover: "/images/meals-1.png"
+cover: "/images/meal/pasta1.jpg"
 tags: ["식단", "아침", "고단백"]
 ---
 
